@@ -1,0 +1,10 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: desafio-seplag-2026-db
+    environment:
+      POSTGRES_DB: music_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: music123
+    ports:
+      - 5656:5432
