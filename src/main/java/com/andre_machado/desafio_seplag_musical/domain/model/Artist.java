@@ -5,10 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "artista")
+@Table(name = "artist")
 @Getter
 @Setter
-public class Artista extends BaseEntity {
+public class Artist extends BaseEntity {
 
     @Column(nullable = false, length = 255)
     private String name;
