@@ -2,7 +2,7 @@ package com.andre_machado.desafio_seplag_musical.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.andre_machado.desafio_seplag_musical.domain.User;
+import com.andre_machado.desafio_seplag_musical.domain.model.User;
 import com.andre_machado.desafio_seplag_musical.service.HelloWorldService;
 
 import org.springframework.beans.factory.annotation.Autowired;
