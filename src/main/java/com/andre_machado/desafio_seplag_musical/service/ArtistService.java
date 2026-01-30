@@ -1,5 +1,7 @@
 package com.andre_machado.desafio_seplag_musical.service;
 
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,7 @@ import com.andre_machado.desafio_seplag_musical.domain.dto.ArtistResponseDTO;
 import com.andre_machado.desafio_seplag_musical.domain.model.Artist;
 import com.andre_machado.desafio_seplag_musical.repository.ArtistRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -30,11 +33,18 @@ public class ArtistService {
         return artists.map(artist -> new ArtistResponseDTO(artist.getId(), artist.getName()));
     }
 
+    @Transactional(readOnly = true)
+    public ArtistResponseDTO findById(UUID id) {
+        Artist artist = artistRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Artist not found with id: " + id));
+        return new ArtistResponseDTO(artist.getId(), artist.getName());
+    }
+
     @Transactional
     public ArtistResponseDTO create(ArtistRequestDTO request) {
         Artist artist = new Artist();
         artist.setName(request.getName());
-        
+
         Artist savedArtist = artistRepository.save(artist);
         return new ArtistResponseDTO(savedArtist.getId(), savedArtist.getName());
     }
