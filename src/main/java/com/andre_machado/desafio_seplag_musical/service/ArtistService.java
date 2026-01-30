@@ -30,22 +30,23 @@ public class ArtistService {
         } else {
             artists = artistRepository.findAll(pageable);
         }
-        return artists.map(artist -> new ArtistResponseDTO(artist.getId(), artist.getName()));
+        return artists.map(artist -> new ArtistResponseDTO(artist.getId(), artist.getName(), artist.getDescription()));
     }
 
     @Transactional(readOnly = true)
     public ArtistResponseDTO findById(UUID id) {
         Artist artist = artistRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Artist not found with id: " + id));
-        return new ArtistResponseDTO(artist.getId(), artist.getName());
+        return new ArtistResponseDTO(artist.getId(), artist.getName(), artist.getDescription());
     }
 
     @Transactional
     public ArtistResponseDTO create(ArtistRequestDTO request) {
         Artist artist = new Artist();
         artist.setName(request.getName());
+        artist.setDescription(request.getDescription());
 
         Artist savedArtist = artistRepository.save(artist);
-        return new ArtistResponseDTO(savedArtist.getId(), savedArtist.getName());
+        return new ArtistResponseDTO(savedArtist.getId(), savedArtist.getName(), savedArtist.getDescription());
     }
 }

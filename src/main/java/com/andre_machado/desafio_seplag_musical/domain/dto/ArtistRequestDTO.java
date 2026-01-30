@@ -11,5 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ArtistRequestDTO {
     private String name;
+    private String description;
 }
 

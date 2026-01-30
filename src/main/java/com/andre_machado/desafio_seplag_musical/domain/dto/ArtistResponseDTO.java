@@ -14,5 +14,6 @@ import lombok.Setter;
 public class ArtistResponseDTO {
     private UUID id;
     private String name;
+    private String description;
 }
 
