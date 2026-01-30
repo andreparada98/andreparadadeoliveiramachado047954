@@ -16,6 +16,9 @@ public class Artist extends BaseEntity {
     @Column(nullable = false, length = 255)
     private String name;
 
+    @Column(nullable = true)
+    private String description;
+
     @ManyToMany(mappedBy = "artists")
     private List<Album> albums = new ArrayList<>();
 }
