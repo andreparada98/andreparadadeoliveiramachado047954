@@ -49,4 +49,16 @@ public class ArtistService {
         Artist savedArtist = artistRepository.save(artist);
         return new ArtistResponseDTO(savedArtist.getId(), savedArtist.getName(), savedArtist.getDescription());
     }
+
+    @Transactional
+    public ArtistResponseDTO update(UUID id, ArtistRequestDTO request) {
+        Artist artist = artistRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Artist not found with id: " + id));
+
+        artist.setName(request.getName());
+        artist.setDescription(request.getDescription());
+
+        Artist updatedArtist = artistRepository.save(artist);
+        return new ArtistResponseDTO(updatedArtist.getId(), updatedArtist.getName(), updatedArtist.getDescription());
+    }
 }
