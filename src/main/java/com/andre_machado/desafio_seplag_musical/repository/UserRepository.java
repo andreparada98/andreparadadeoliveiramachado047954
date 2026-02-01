@@ -10,5 +10,5 @@ import com.andre_machado.desafio_seplag_musical.domain.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-    Optional<User> findByEmail(String email);
+    Optional<User> findByUsername(String username);
 }
