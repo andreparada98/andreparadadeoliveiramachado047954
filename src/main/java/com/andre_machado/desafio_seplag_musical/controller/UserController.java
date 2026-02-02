@@ -11,15 +11,19 @@ import com.andre_machado.desafio_seplag_musical.domain.dto.UserRequestDTO;
 import com.andre_machado.desafio_seplag_musical.domain.dto.UserResponseDTO;
 import com.andre_machado.desafio_seplag_musical.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
+@Tag(name = "Usuários", description = "Endpoints para gerenciamento de usuários")
 public class UserController {
 
     private final UserService userService;
 
+    @Operation(summary = "Cria um novo usuário", description = "Endpoint aberto para registro de novos usuários")
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO request) {
         UserResponseDTO response = userService.create(request);

@@ -21,16 +21,20 @@ import com.andre_machado.desafio_seplag_musical.domain.dto.ArtistRequestDTO;
 import com.andre_machado.desafio_seplag_musical.domain.dto.ArtistResponseDTO;
 import com.andre_machado.desafio_seplag_musical.service.ArtistService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/artist")
 @RequiredArgsConstructor
 @PreAuthorize("isAuthenticated()")
+@Tag(name = "Artistas", description = "Endpoints para gerenciamento de artistas")
 public class ArtistController {
 
     private final ArtistService artistService;
 
+    @Operation(summary = "Lista todos os artistas", description = "Lista artistas com paginação e filtros")
     @GetMapping
     public ResponseEntity<Page<ArtistResponseDTO>> getAllArtists(
             ArtistFilterDTO filter,
@@ -39,18 +43,21 @@ public class ArtistController {
         return ResponseEntity.ok(artists);
     }
 
+    @Operation(summary = "Busca artista por ID", description = "Retorna os detalhes de um artista específico")
     @GetMapping("/{id}")
     public ResponseEntity<ArtistResponseDTO> getArtistById(@PathVariable UUID id) {
         ArtistResponseDTO artist = artistService.findById(id);
         return ResponseEntity.ok(artist);
     }
 
+    @Operation(summary = "Cria um novo artista", description = "Cadastra um novo artista no sistema")
     @PostMapping
     public ResponseEntity<ArtistResponseDTO> createArtist(@RequestBody ArtistRequestDTO request) {
         ArtistResponseDTO artist = artistService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(artist);
     }
 
+    @Operation(summary = "Atualiza um artista", description = "Atualiza os dados de um artista existente")
     @PutMapping("/{id}")
     public ResponseEntity<ArtistResponseDTO> updateArtist(@PathVariable UUID id,
             @RequestBody ArtistRequestDTO request) {
