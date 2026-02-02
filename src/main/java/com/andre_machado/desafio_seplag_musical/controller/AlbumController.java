@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.andre_machado.desafio_seplag_musical.domain.dto.AlbumFilterDTO;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/album")
 @RequiredArgsConstructor
+@PreAuthorize("isAuthenticated()")
 public class AlbumController {
 
     private final AlbumService albumService;
@@ -49,4 +51,3 @@ public class AlbumController {
         return ResponseEntity.ok(album);
     }
 }
-
