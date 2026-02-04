@@ -1,0 +1,32 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="logo-container">
+      <div class="logo-circle">
+        <span class="music-icon">♫</span>
+      </div>
+    </div>
+
+    <h1 class="title">Gerenciador Musical</h1>
+    <p class="subtitle">Welcome back</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      @if (errorMessage()) {
+      <div class="error-message">
+        {{ errorMessage() }}
+      </div>
+      }
+
+      <XInput label="Email" placeholder="seu@email.com" formControlName="username" />
+
+      <XInput label="Password" type="password" placeholder="........" formControlName="password" />
+
+      <button type="submit" [disabled]="loginForm.invalid || isLoading()" class="btn-signin">
+        @if (isLoading()) {
+        Carregando...
+        } @else {
+        Sign In
+        }
+      </button>
+    </form>
+  </div>
+</div>
