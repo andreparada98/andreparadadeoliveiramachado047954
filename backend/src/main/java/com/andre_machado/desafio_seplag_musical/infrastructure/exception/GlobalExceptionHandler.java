@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import org.springframework.security.authentication.BadCredentialsException;
 import com.andre_machado.desafio_seplag_musical.domain.dto.ErrorResponseDTO;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -14,6 +15,18 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBadCredentials(BadCredentialsException ex,
+            HttpServletRequest request) {
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                LocalDateTime.now(),
+                HttpStatus.UNAUTHORIZED.value(),
+                "Unauthorized",
+                "Usuário ou senha inválidos",
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleEntityNotFound(EntityNotFoundException ex,
