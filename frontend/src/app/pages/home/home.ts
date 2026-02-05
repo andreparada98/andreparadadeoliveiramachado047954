@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { ArtistCardComponent } from '../../shared/components/artist-card/artist-card';
 import { XButtonComponent } from '../../shared/components/x-button/x-button';
 import { XPaginationComponent } from '../../shared/components/x-pagination/x-pagination';
+import { XInputComponent } from '../../shared/components/x-input/x-input';
 import { FormsModule } from '@angular/forms';
 import { ArtistService } from '../../services/artist.service';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -17,7 +18,7 @@ import { PageResponse } from '../../shared/models/artist.model';
 @Component({
   selector: 'XHome',
   standalone: true,
-  imports: [ArtistCardComponent, XButtonComponent, XPaginationComponent, FormsModule, CommonModule],
+  imports: [ArtistCardComponent, XButtonComponent, XPaginationComponent, XInputComponent, FormsModule, CommonModule],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })

@@ -1,8 +1,8 @@
 <main class="home-container">
     <div class="actions-bar">
         <div class="search-wrapper">
-            <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
-                placeholder="Search artists..." class="search-input" />
+            <XInput [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
+                placeholder="Buscar Artista..." />
         </div>
 
         <div class="buttons-group">
