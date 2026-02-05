@@ -4,8 +4,6 @@ import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-import io.minio.GetPresignedObjectUrlArgs;
-import io.minio.http.Method;
 import com.andre_machado.desafio_seplag_musical.domain.dto.FileResponseDTO;
 import com.andre_machado.desafio_seplag_musical.domain.model.File;
 import com.andre_machado.desafio_seplag_musical.repository.FileRepository;
@@ -29,12 +27,25 @@ public class FileService {
     @Value("${minio.bucket-name}")
     private String bucketName;
 
+    @Value("${minio.endpoint}")
+    private String minioEndpoint;
+
     public FileResponseDTO uploadFile(MultipartFile file) {
         try {
             boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
             if (!found) {
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
             }
+
+            String policy = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:GetBucketLocation\",\"s3:ListBucket\"],\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"*\"]},\"Resource\":[\"arn:aws:s3:::"
+                    + bucketName
+                    + "\"]},{\"Action\":[\"s3:GetObject\"],\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"*\"]},\"Resource\":[\"arn:aws:s3:::"
+                    + bucketName + "/*\"]}]}";
+            minioClient.setBucketPolicy(
+                    io.minio.SetBucketPolicyArgs.builder()
+                            .bucket(bucketName)
+                            .config(policy)
+                            .build());
 
             String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
 
@@ -74,9 +85,6 @@ public class FileService {
         File file = fileRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("File not found"));
 
-        // Atualiza a URL caso a anterior tenha expirado
-        file.setUrl(getFileUrl(file.getName()));
-
         return new FileResponseDTO(
                 file.getId(),
                 file.getName(),
@@ -86,17 +94,6 @@ public class FileService {
     }
 
     public String getFileUrl(String fileName) {
-        try {
-            return minioClient.getPresignedObjectUrl(
-                    GetPresignedObjectUrlArgs.builder()
-                            .method(Method.GET)
-                            .bucket(bucketName)
-                            .object(fileName)
-                            .expiry(60 * 60 * 24) // 24 hours
-                            .build());
-        } catch (Exception e) {
-            log.error("Error getting file URL from MinIO", e);
-            throw new RuntimeException("Could not get file URL", e);
-        }
+        return String.format("%s/%s/%s", minioEndpoint, bucketName, fileName);
     }
 }

@@ -24,5 +24,8 @@ public class AlbumRequestDTO {
 
     @Schema(description = "Lista de IDs dos artistas do álbum")
     private List<UUID> artistIds;
+
+    @Schema(description = "ID do arquivo da capa do álbum (opcional)")
+    private UUID fileId;
 }
 

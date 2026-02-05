@@ -22,8 +22,17 @@
 
       <div class="form-group">
         <label for="description">Descrição / Biografia</label>
-        <textarea id="description" formControlName="description" placeholder="Conte um pouco sobre a história do artista..."
-          rows="5"></textarea>
+        <textarea id="description" formControlName="description"
+          placeholder="Conte um pouco sobre a história do artista..." rows="5"></textarea>
+      </div>
+
+      <div class="form-group">
+        <XSelectManyAlbums label="Álbuns" placeholder="Selecione os álbuns do artista" formControlName="albumIds">
+        </XSelectManyAlbums>
+        <div class="quick-create">
+          <span>Não encontrou o álbum? </span>
+          <button type="button" class="link-btn" (click)="showQuickAlbumModal.set(true)">Crie-o rapidamente</button>
+        </div>
       </div>
 
       <div class="actions">
@@ -38,5 +47,9 @@
     </form>
     }
   </div>
-</div>
 
+  @if (showQuickAlbumModal()) {
+  <QuickAlbumModal [artistId]="artistId()" (close)="showQuickAlbumModal.set(false)" (saved)="onQuickAlbumSaved($event)">
+  </QuickAlbumModal>
+  }
+</div>

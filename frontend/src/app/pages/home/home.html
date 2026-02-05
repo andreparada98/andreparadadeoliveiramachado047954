@@ -37,7 +37,16 @@
                 <div class="albums-list-mini">
                     @for (album of albums(); track album.id) {
                     <div class="album-mini-item">
-                        <span class="album-title">{{ album.title }}</span>
+                        <div class="album-info-group">
+                            <div class="album-mini-cover">
+                                @if (album.coverUrl) {
+                                <img [src]="album.coverUrl" [alt]="album.title">
+                                } @else {
+                                <span class="material-icons">album</span>
+                                }
+                            </div>
+                            <span class="album-title">{{ album.title }}</span>
+                        </div>
                         <span class="album-date">{{ album.releasedAt | date:'yyyy' }}</span>
                     </div>
                     } @empty {

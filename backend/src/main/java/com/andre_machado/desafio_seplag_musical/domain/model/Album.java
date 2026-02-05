@@ -7,6 +7,7 @@ import java.util.List;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Formula;
 
 @Entity
 @Table(name = "album")
@@ -18,6 +19,9 @@ public class Album extends BaseEntity {
 
     @Column(nullable = false)
     private LocalDateTime releasedAt;
+
+    @Formula("(SELECT f.url FROM file f WHERE f.album_id = id LIMIT 1)")
+    private String coverUrl;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<File> covers = new ArrayList<>();

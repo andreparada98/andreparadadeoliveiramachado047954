@@ -9,6 +9,7 @@ export interface AlbumRequest {
   title: string;
   releasedAt: string;
   artistIds: string[];
+  fileId?: string;
 }
 
 @Injectable({

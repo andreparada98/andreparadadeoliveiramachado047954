@@ -27,5 +27,8 @@ public class AlbumResponseDTO {
 
     @Schema(description = "Lista de artistas do álbum")
     private List<ArtistResponseDTO> artists;
+
+    @Schema(description = "URL da capa do álbum", example = "http://localhost:9000/music-files/cover.jpg")
+    private String coverUrl;
 }
 

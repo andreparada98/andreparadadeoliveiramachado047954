@@ -79,7 +79,7 @@ export class AlbumListComponent extends BaseComponent {
   }
 
   onEditAlbum(album: Album) {
-    this.router.navigate(['/album', album.id, 'edit']); // This route might not exist yet, but pattern is consistent
+    this.router.navigate(['/album', album.id, 'edit']);
   }
 
   onPageChange(page: number) {

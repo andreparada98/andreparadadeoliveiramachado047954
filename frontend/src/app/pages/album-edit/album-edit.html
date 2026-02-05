@@ -15,6 +15,27 @@
         </div>
         }
 
+        <div class="cover-upload">
+          <label>Capa do Álbum</label>
+          <div class="preview-container" (click)="fileInput.click()">
+            @if (previewUrl()) {
+              <img [src]="previewUrl()" alt="Preview da capa">
+            } @else {
+              <div class="placeholder">
+                <span class="material-icons">add_a_photo</span>
+                <span>Clique para trocar a capa</span>
+              </div>
+            }
+          </div>
+          <input 
+            #fileInput 
+            type="file" 
+            accept="image/*" 
+            (change)="onFileChange($event)" 
+            style="display: none"
+          >
+        </div>
+
         <XInput label="Título do Álbum" placeholder="Ex: The Dark Side of the Moon" formControlName="title" />
 
         <XInput label="Data de Lançamento" type="date" formControlName="releasedAt" />
@@ -40,4 +61,3 @@
     }
   </div>
 </div>
-

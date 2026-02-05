@@ -2,13 +2,6 @@
   @if (label()) {
   <label [for]="id()">{{ label() }}</label>
   }
-  <input
-    [id]="id()"
-    [type]="type()"
-    [placeholder]="placeholder()"
-    [value]="value()"
-    [disabled]="disabled()"
-    (input)="handleInput($event)"
-    (blur)="onTouched()"
-  />
+  <input [id]="id()" [type]="type()" [placeholder]="placeholder()" [value]="value()" [disabled]="disabled()"
+    (input)="handleInput($event)" (blur)="onTouched()" />
 </div>

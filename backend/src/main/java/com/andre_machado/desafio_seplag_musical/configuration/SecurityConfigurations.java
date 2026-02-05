@@ -40,10 +40,7 @@ public class SecurityConfigurations {
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(authorize -> authorize
-                                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Liberar
-                                                                                                        // explicitamente
-                                                                                                        // todos os
-                                                                                                        // preflights
+                                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/user").permitAll()
                                                 .requestMatchers("/api", "/api-docs/**", "/v3/api-docs/**",
@@ -60,10 +57,10 @@ public class SecurityConfigurations {
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOriginPatterns(List.of("*")); // pattern "*" é mais flexível
+                configuration.setAllowedOriginPatterns(List.of("*"));
                 configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                 configuration.setAllowedHeaders(List.of("*"));
-                configuration.setAllowCredentials(true); // Recomendado para evitar problemas com sessões/cookies
+                configuration.setAllowCredentials(true);
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
                 source.registerCorsConfiguration("/**", configuration);
                 return source;

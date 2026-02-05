@@ -13,6 +13,7 @@ export interface Album {
   releasedAt: string;
   artists: Artist[];
   covers?: AlbumCover[];
+  coverUrl?: string;
 }
 
 export interface AlbumFilter {

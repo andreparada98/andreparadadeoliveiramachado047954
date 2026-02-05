@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 public class File extends BaseEntity {
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 500)
     private String name;
 
     @Column(nullable = true)
@@ -23,7 +23,7 @@ public class File extends BaseEntity {
     @Column(nullable = false, length = 255)
     private String mimeType;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 2048)
     private String url;
 
     @ManyToOne

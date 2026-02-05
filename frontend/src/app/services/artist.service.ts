@@ -5,6 +5,12 @@ import { Artist, ArtistFilter, PageResponse } from '../shared/models/artist.mode
 import { Album } from '../shared/models/album.model';
 import { environment } from '../../environments/environment';
 
+export interface ArtistRequest {
+  name: string;
+  description?: string;
+  albumIds?: string[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -36,11 +42,11 @@ export class ArtistService {
     return this.http.get<Artist>(`${this.apiUrl}/${id}`);
   }
 
-  createArtist(artist: Omit<Artist, 'id'>): Observable<Artist> {
+  createArtist(artist: ArtistRequest): Observable<Artist> {
     return this.http.post<Artist>(this.apiUrl, artist);
   }
 
-  updateArtist(id: string, artist: Omit<Artist, 'id'>): Observable<Artist> {
+  updateArtist(id: string, artist: ArtistRequest): Observable<Artist> {
     return this.http.put<Artist>(`${this.apiUrl}/${id}`, artist);
   }
 }

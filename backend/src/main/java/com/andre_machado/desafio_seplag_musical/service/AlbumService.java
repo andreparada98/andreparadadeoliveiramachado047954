@@ -15,8 +15,10 @@ import com.andre_machado.desafio_seplag_musical.domain.dto.AlbumResponseDTO;
 import com.andre_machado.desafio_seplag_musical.domain.dto.ArtistResponseDTO;
 import com.andre_machado.desafio_seplag_musical.domain.model.Album;
 import com.andre_machado.desafio_seplag_musical.domain.model.Artist;
+import com.andre_machado.desafio_seplag_musical.domain.model.File;
 import com.andre_machado.desafio_seplag_musical.repository.AlbumRepository;
 import com.andre_machado.desafio_seplag_musical.repository.ArtistRepository;
+import com.andre_machado.desafio_seplag_musical.repository.FileRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class AlbumService {
 
     private final AlbumRepository albumRepository;
     private final ArtistRepository artistRepository;
+    private final FileRepository fileRepository;
 
     @Transactional(readOnly = true)
     public Page<AlbumResponseDTO> findAll(AlbumFilterDTO filter, Pageable pageable) {
@@ -66,6 +69,15 @@ public class AlbumService {
         }
 
         Album savedAlbum = albumRepository.save(album);
+
+        if (request.getFileId() != null) {
+            File file = fileRepository.findById(request.getFileId())
+                    .orElseThrow(() -> new EntityNotFoundException("File not found with id: " + request.getFileId()));
+            file.setAlbum(savedAlbum);
+            savedAlbum.getCovers().add(file);
+            fileRepository.save(file);
+        }
+
         return convertToResponseDTO(savedAlbum);
     }
 
@@ -80,6 +92,17 @@ public class AlbumService {
         if (request.getArtistIds() != null) {
             List<Artist> artists = artistRepository.findAllById(request.getArtistIds());
             album.setArtists(artists);
+        }
+
+        if (request.getFileId() != null) {
+            // Se houver uma nova capa, desvinculamos as antigas
+            album.getCovers().clear();
+
+            File file = fileRepository.findById(request.getFileId())
+                    .orElseThrow(() -> new EntityNotFoundException("File not found with id: " + request.getFileId()));
+            file.setAlbum(album);
+            album.getCovers().add(file);
+            fileRepository.save(file);
         }
 
         Album updatedAlbum = albumRepository.save(album);
@@ -101,6 +124,7 @@ public class AlbumService {
                 album.getId(),
                 album.getTitle(),
                 album.getReleasedAt(),
-                artists);
+                artists,
+                album.getCoverUrl());
     }
 }

@@ -1,6 +1,8 @@
 <div class="album-card">
   <div class="album-cover">
-    @if (album().covers && album().covers!.length > 0) {
+    @if (album().coverUrl) {
+      <img [src]="album().coverUrl" [alt]="album().title">
+    } @else if (album().covers && album().covers!.length > 0) {
       <img [src]="album().covers![0].url" [alt]="album().title">
     } @else {
       <div class="no-cover">
