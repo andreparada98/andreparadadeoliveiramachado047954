@@ -83,9 +83,7 @@
       color: #374151;
     }
 
-    textarea {
-      // ... existing styles ...
-    }
+    textarea {}
 
     .quick-create {
       font-size: 0.75rem;
@@ -109,9 +107,7 @@
     }
   }
 
-  .actions {
-    // ...
-  }
+  .actions {}
 }
 
 .quick-form {
@@ -128,7 +124,11 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
+  from {
+    transform: rotate(0deg);
+  }
 
+  to {
+    transform: rotate(360deg);
+  }
+}

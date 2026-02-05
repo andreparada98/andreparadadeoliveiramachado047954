@@ -59,6 +59,7 @@ O projeto está totalmente containerizado, facilitando a execução em qualquer 
 
 ### 1. Pré-requisitos
 - Docker e Docker Compose instalados.
+- Portas livres no host: **80, 3000, 5656, 9000, 9001**.
 
 ### 2. Execução via Docker Compose
 Na raiz do projeto, execute:
@@ -68,12 +69,16 @@ docker-compose up -d --build
 ```
 
 Isso iniciará:
-- **API (Spring Boot):** `http://localhost:8080` (Documentação em `/api`)
-- **Front-end (Angular):** `http://localhost:4200`
-- **PostgreSQL:** porta `5432`
-- **MinIO:** porta `9000` (API) e `9001` (Console)
+- **Front-end (Angular):** [http://localhost](http://localhost) (Porta 80)
+- **API (Spring Boot):** [http://localhost:3000](http://localhost:3000) (Swagger em `/api`)
+- **PostgreSQL:** `localhost:5656`
+- **MinIO:** `localhost:9000` (API) e [http://localhost:9001](http://localhost:9001) (Console)
 
-### 3. Execução Manual (Desenvolvimento)
+### 3. Credenciais Padrão (Login)
+- **Usuário:** `admin`
+- **Senha:** `admin`
+
+### 4. Execução Manual (Desenvolvimento)
 
 #### Backend:
 ```bash
