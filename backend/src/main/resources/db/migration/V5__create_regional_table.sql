@@ -1,0 +1,7 @@
+CREATE TABLE regional (
+    id_sequencial SERIAL PRIMARY KEY,
+    id INTEGER NOT NULL,
+    nome VARCHAR(200) NOT NULL,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE
+);
+
