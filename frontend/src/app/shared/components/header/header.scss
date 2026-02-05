@@ -37,6 +37,32 @@
     }
   }
 
+  .main-nav {
+    display: flex;
+    gap: 1.5rem;
+    margin-left: 2rem;
+    flex: 1;
+
+    .nav-item {
+      text-decoration: none;
+      color: #6b7280;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      padding: 0.5rem 0.25rem;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+
+      &:hover {
+        color: #111827;
+      }
+
+      &.active {
+        color: #6366f1;
+        border-bottom-color: #6366f1;
+      }
+    }
+  }
+
   .logout-btn {
     background: none;
     border: none;

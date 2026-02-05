@@ -11,6 +11,7 @@ import com.andre_machado.desafio_seplag_musical.domain.dto.ArtistFilterDTO;
 import com.andre_machado.desafio_seplag_musical.domain.dto.ArtistRequestDTO;
 import com.andre_machado.desafio_seplag_musical.domain.dto.ArtistResponseDTO;
 import com.andre_machado.desafio_seplag_musical.domain.model.Artist;
+import com.andre_machado.desafio_seplag_musical.domain.projection.ArtistProjection;
 import com.andre_machado.desafio_seplag_musical.repository.ArtistRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -24,16 +25,19 @@ public class ArtistService {
 
     @Transactional(readOnly = true)
     public Page<ArtistResponseDTO> findAll(ArtistFilterDTO filter, Pageable pageable) {
+        Page<ArtistProjection> projections;
         if (filter.getName() != null && !filter.getName().isBlank()) {
-            return artistRepository.findByNameContainingIgnoreCaseWithAlbumCount(filter.getName(), pageable);
+            projections = artistRepository.findByNameContainingIgnoreCaseWithAlbumCount(filter.getName(), pageable);
         } else {
-            return artistRepository.findAllWithAlbumCount(pageable);
+            projections = artistRepository.findAllWithAlbumCount(pageable);
         }
+        return projections.map(this::mapToResponseDTO);
     }
 
     @Transactional(readOnly = true)
     public ArtistResponseDTO findById(UUID id) {
         return artistRepository.findByIdWithAlbumCount(id)
+                .map(this::mapToResponseDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Artist not found with id: " + id));
     }
 
@@ -57,5 +61,14 @@ public class ArtistService {
 
         Artist updatedArtist = artistRepository.save(artist);
         return findById(updatedArtist.getId());
+    }
+
+    private ArtistResponseDTO mapToResponseDTO(ArtistProjection projection) {
+        return new ArtistResponseDTO(
+                projection.getId(),
+                projection.getName(),
+                projection.getDescription(),
+                projection.getAlbumCount()
+        );
     }
 }

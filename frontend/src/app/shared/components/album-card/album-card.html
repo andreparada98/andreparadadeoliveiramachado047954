@@ -1,0 +1,32 @@
+<div class="album-card">
+  <div class="album-cover">
+    @if (album().covers && album().covers!.length > 0) {
+      <img [src]="album().covers![0].url" [alt]="album().title">
+    } @else {
+      <div class="no-cover">
+        <span class="material-icons">album</span>
+        <span class="no-cover-text">Sem capa</span>
+      </div>
+    }
+  </div>
+  
+  <div class="album-content">
+    <h3 class="album-title">{{ album().title }}</h3>
+    <p class="album-artists">
+      @for (artist of album().artists; track artist.id; let last = $last) {
+        {{ artist.name }}{{ !last ? ', ' : '' }}
+      }
+    </p>
+    <p class="album-date">{{ album().releasedAt | date:'dd/MM/yyyy' }}</p>
+  </div>
+
+  <div class="album-actions">
+    <button class="action-btn view" (click)="onView($event)" title="Visualizar">
+      <span class="material-icons">visibility</span>
+    </button>
+    <button class="action-btn edit" (click)="onEdit($event)" title="Editar">
+      <span class="material-icons">edit</span>
+    </button>
+  </div>
+</div>
+

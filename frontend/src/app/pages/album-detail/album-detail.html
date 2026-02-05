@@ -1,0 +1,62 @@
+<main class="album-detail-container">
+    @if (isLoading()) {
+    <div class="loading-state">Carregando detalhes do álbum...</div>
+    } @else if (album()) {
+    <div class="header-actions">
+        <XButton [variant]="'primary'" (clicked)="onBack()">
+            <span class="material-icons">arrow_back</span> Voltar
+        </XButton>
+        <XButton (clicked)="onEdit()">
+            <span class="material-icons">edit</span> Editar Álbum
+        </XButton>
+    </div>
+
+    <div class="album-hero">
+        <div class="album-cover-large">
+            @if (album()?.covers && album()!.covers!.length > 0) {
+            <img [src]="album()!.covers![0].url" [alt]="album()?.title">
+            } @else {
+            <div class="no-cover-large">
+                <span class="material-icons">album</span>
+                <span>Não possui capa</span>
+            </div>
+            }
+        </div>
+
+        <div class="album-info-large">
+            <h1 class="album-title-large">{{ album()?.title }}</h1>
+            <div class="album-meta">
+                <span class="meta-item">
+                    <span class="material-icons">calendar_today</span>
+                    {{ album()?.releasedAt | date:'dd/MM/yyyy' }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <section class="artists-section">
+        <h2 class="section-title">Artistas Participantes</h2>
+        <div class="artists-list">
+            @for (artist of album()?.artists; track artist.id) {
+            <div class="artist-item-card" (click)="onViewArtist(artist.id)">
+                <div class="artist-avatar">
+                    <span class="material-icons">person</span>
+                </div>
+                <div class="artist-name-container">
+                    <span class="artist-name">{{ artist.name }}</span>
+                    <span class="view-profile">Ver perfil</span>
+                </div>
+                <span class="material-icons chevron">chevron_right</span>
+            </div>
+            } @empty {
+            <p class="empty-msg">Nenhum artista associado a este álbum.</p>
+            }
+        </div>
+    </section>
+    } @else {
+    <div class="error-state">
+        <p>Álbum não encontrado.</p>
+        <XButton (clicked)="onBack()">Voltar para a listagem</XButton>
+    </div>
+    }
+</main>

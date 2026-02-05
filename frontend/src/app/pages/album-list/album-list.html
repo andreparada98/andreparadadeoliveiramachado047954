@@ -1,0 +1,30 @@
+<main class="album-list-container">
+    <div class="actions-bar">
+        <div class="search-wrapper">
+            <XInput [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
+                placeholder="Buscar Álbuns..." />
+        </div>
+
+        <div class="buttons-group">
+            <XButton (clicked)="onAddAlbum()">
+                + Adicionar Álbum
+            </XButton>
+        </div>
+    </div>
+
+    @if (isLoading()) {
+    <div class="loading-state">Carregando álbuns...</div>
+    } @else {
+    <div class="albums-grid">
+        @for (album of albums(); track album.id) {
+        <AlbumCard [album]="album" (edit)="onEditAlbum($event)" (view)="onViewAlbum($event)"></AlbumCard>
+        } @empty {
+        <div class="empty-state">Nenhum álbum encontrado.</div>
+        }
+    </div>
+    }
+
+    <XPagination [currentPage]="currentPage()" [pageSize]="pageSize()" [totalPages]="totalPages()"
+        [totalElements]="totalElements()" (pageChange)="onPageChange($event)" (pageSizeChange)="pageSize.set($event)">
+    </XPagination>
+</main>

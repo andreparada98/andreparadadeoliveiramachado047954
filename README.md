@@ -43,6 +43,10 @@ O projeto segue uma arquitetura moderna e escalável, utilizando o padrão de mo
 ### C. Front End
 - [x] **Consumo de API:** Integração total com o backend para listagem, busca e formulários.
 - [x] **Interface e Usabilidade:** Layout responsivo, busca reativa e navegação fluida.
+- [x] **Navegação:** Menu global para alternar entre listagem de Artistas e Álbuns.
+- [x] **Listagem de Álbuns:** Nova tela de listagem global de álbuns com busca e paginação.
+- [x] **Detalhamento de Álbum:** Tela para visualizar informações do álbum e artistas participantes.
+- [x] **Placeholders Inteligentes:** Exibição de capas genéricas para álbuns sem imagem cadastrada.
 - [x] **Componentização e Estado:** Uso de Signals para gerenciamento de estado e componentes reutilizáveis.
 - [x] **Paginação:** Componente customizado com controle de itens por página.
 - [x] **Autenticação:** Fluxo de login com persistência de token e logout automático em caso de expiração.

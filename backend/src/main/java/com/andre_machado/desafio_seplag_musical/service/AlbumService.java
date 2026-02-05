@@ -94,7 +94,7 @@ public class AlbumService {
 
     private AlbumResponseDTO convertToResponseDTO(Album album) {
         List<ArtistResponseDTO> artists = album.getArtists().stream()
-                .map(artist -> new ArtistResponseDTO(artist.getId(), artist.getName(), artist.getDescription()))
+                .map(artist -> new ArtistResponseDTO(artist.getId(), artist.getName(), artist.getDescription(), null))
                 .collect(Collectors.toList());
 
         return new AlbumResponseDTO(

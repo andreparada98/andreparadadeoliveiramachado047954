@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { Artist } from '../../models/artist.model';
 
 @Component({
@@ -13,9 +13,12 @@ export class ArtistCardComponent {
   view = output<Artist>();
   edit = output<Artist>();
 
-  get initial(): string {
-    return this.artist().name.charAt(0).toUpperCase();
-  }
+  initial = computed(() => this.artist().name.charAt(0).toUpperCase());
+  
+  albumLabel = computed(() => {
+    const count = this.artist().albumCount;
+    return count === 1 ? 'album' : 'albums';
+  });
 
   onClick(): void {
     this.clicked.emit(this.artist());
