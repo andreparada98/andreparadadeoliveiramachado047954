@@ -1,0 +1,29 @@
+<div class="pagination-container">
+  <div class="page-size-selector">
+    <label>{{ label() }}</label>
+    <select [ngModel]="pageSize()" (ngModelChange)="onPageSizeChange($event)">
+      @for (option of pageSizeOptions(); track option) {
+        <option [value]="option">{{ option }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="pagination-controls">
+    <button class="page-btn" [disabled]="currentPage() === 0" (click)="onPageChange(currentPage() - 1)">
+      <span class="material-icons">chevron_left</span>
+    </button>
+
+    <div class="page-info">
+      Página {{ currentPage() + 1 }} de {{ totalPages() || 1 }}
+    </div>
+
+    <button class="page-btn" [disabled]="currentPage() >= totalPages() - 1" (click)="onPageChange(currentPage() + 1)">
+      <span class="material-icons">chevron_right</span>
+    </button>
+  </div>
+
+  <div class="total-count">
+    Total: {{ totalElements() }}
+  </div>
+</div>
+

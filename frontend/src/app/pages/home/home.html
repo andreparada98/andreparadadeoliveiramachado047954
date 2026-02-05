@@ -51,4 +51,8 @@
         </div>
         }
     </div>
+
+    <XPagination [currentPage]="currentPage()" [pageSize]="pageSize()" [totalPages]="totalPages()"
+        [totalElements]="totalElements()" (pageChange)="onPageChange($event)" (pageSizeChange)="pageSize.set($event)">
+    </XPagination>
 </main>
