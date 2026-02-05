@@ -1,0 +1,20 @@
+<footer class="app-footer">
+  <div class="footer-content">
+    <p>&copy; 2026 Desafio SEPLAG Musical. Todos os direitos reservados.</p>
+    
+    <div class="status-indicators">
+      <div class="status-item">
+        <span class="status-label">API Liveness:</span>
+        <span class="status-dot" [class.up]="isLivenessUp()" [class.down]="!isLivenessUp()"></span>
+        <span class="status-text">{{ isLivenessUp() ? 'UP' : 'DOWN' }}</span>
+      </div>
+      
+      <div class="status-item">
+        <span class="status-label">API Readiness:</span>
+        <span class="status-dot" [class.up]="isReadinessUp()" [class.down]="!isReadinessUp()"></span>
+        <span class="status-text">{{ isReadinessUp() ? 'UP' : 'DOWN' }}</span>
+      </div>
+    </div>
+  </div>
+</footer>
+

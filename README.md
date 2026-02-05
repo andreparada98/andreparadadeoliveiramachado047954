@@ -70,7 +70,9 @@ docker-compose up -d --build
 
 Isso iniciará:
 - **Front-end (Angular):** [http://localhost](http://localhost) (Porta 80)
-- **API (Spring Boot):** [http://localhost:3000/v1](http://localhost:3000/v1) (Swagger em `/api`)
+    - **API (Spring Boot):** [http://localhost:3000/v1](http://localhost:3000/v1) (Swagger em `/api`)
+    - **Health Check (Liveness):** [http://localhost:3000/actuator/health/liveness](http://localhost:3000/actuator/health/liveness)
+    - **Health Check (Readiness):** [http://localhost:3000/actuator/health/readiness](http://localhost:3000/actuator/health/readiness)
 - **PostgreSQL:** `localhost:5656`
 - **MinIO:** `localhost:9000` (API) e [http://localhost:9001](http://localhost:9001) (Console)
 
