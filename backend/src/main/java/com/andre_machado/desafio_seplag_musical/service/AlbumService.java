@@ -95,7 +95,6 @@ public class AlbumService {
         }
 
         if (request.getFileId() != null) {
-            // Se houver uma nova capa, desvinculamos as antigas
             album.getCovers().clear();
 
             File file = fileRepository.findById(request.getFileId())

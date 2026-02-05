@@ -30,6 +30,9 @@ public class FileService {
     @Value("${minio.endpoint}")
     private String minioEndpoint;
 
+    @Value("${minio.public-url}")
+    private String minioPublicUrl;
+
     public FileResponseDTO uploadFile(MultipartFile file) {
         try {
             boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
@@ -94,6 +97,6 @@ public class FileService {
     }
 
     public String getFileUrl(String fileName) {
-        return String.format("%s/%s/%s", minioEndpoint, bucketName, fileName);
+        return String.format("%s/%s/%s", minioPublicUrl, bucketName, fileName);
     }
 }
