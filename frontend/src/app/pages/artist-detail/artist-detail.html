@@ -1,68 +1,69 @@
 <div class="detail-container">
   @if (isLoading()) {
-    <div class="loading-state">
-      <span class="material-icons rotating">sync</span>
-      <p>Carregando detalhes do artista...</p>
-    </div>
+  <div class="loading-state">
+    <span class="material-icons rotating">sync</span>
+    <p>Carregando detalhes do artista...</p>
+  </div>
   } @else if (artist()) {
-    <header class="detail-header">
-      <a routerLink="/home" class="back-link">
-        <span class="material-icons">arrow_back</span>
-        Voltar
-      </a>
-      
-      <div class="artist-main-info">
-        <div class="avatar-large">
-          {{ artist()?.name?.charAt(0) }}
-        </div>
-        <div class="text-info">
-          <h1>{{ artist()?.name }}</h1>
-          <p class="description">{{ artist()?.description }}</p>
-        </div>
-      </div>
-    </header>
+  <header class="detail-header">
+    <a routerLink="/home" class="back-link">
+      <span class="material-icons">arrow_back</span>
+      Voltar
+    </a>
 
-    <section class="albums-section">
-      <div class="section-title">
-        <span class="material-icons">album</span>
-        <h2>Discografia</h2>
+    <div class="artist-main-info">
+      <div class="avatar-large">
+        {{ artist()?.name?.charAt(0) }}
       </div>
+      <div class="text-info">
+        <h1>{{ artist()?.name }}</h1>
+        <p class="description">{{ artist()?.description }}</p>
+      </div>
+    </div>
+  </header>
 
-      @if (isLoadingAlbums()) {
-        <p class="loading-text">Buscando álbuns...</p>
-      } @else {
-        <div class="albums-grid">
-          @for (album of albums(); track album.id) {
-            <div class="album-card">
-              <div class="album-cover">
-                @if (album.covers && album.covers.length > 0) {
-                  <img [src]="album.covers[0].url" [alt]="album.title">
-                } @else {
-                  <div class="album-cover-placeholder">
-                    <span class="material-icons">music_note</span>
-                  </div>
-                }
-              </div>
-              <div class="album-details">
-                <h3 class="album-title">{{ album.title }}</h3>
-                <p class="album-year">{{ album.releasedAt | date:'yyyy' }}</p>
-              </div>
-            </div>
-          } @empty {
-            <div class="empty-albums">
-              <span class="material-icons">info</span>
-              <p>Este artista ainda não possui álbuns cadastrados.</p>
-            </div>
+  <section class="albums-section">
+    <div class="section-title">
+      <span class="material-icons">album</span>
+      <h2>Discografia</h2>
+    </div>
+
+    @if (isLoadingAlbums()) {
+    <p class="loading-text">Buscando álbuns...</p>
+    } @else {
+    <div class="albums-grid">
+      @for (album of albums(); track album.id) {
+      <div class="album-card">
+        <div class="album-cover">
+          @if (album.coverUrl) {
+          <img [src]="album.coverUrl" [alt]="album.title">
+          } @else if (album.covers && album.covers.length > 0) {
+          <img [src]="album.covers[0].url" [alt]="album.title">
+          } @else {
+          <div class="album-cover-placeholder">
+            <span class="material-icons">music_note</span>
+          </div>
           }
         </div>
+        <div class="album-details">
+          <h3 class="album-title">{{ album.title }}</h3>
+          <p class="album-year">{{ album.releasedAt | date:'yyyy' }}</p>
+        </div>
+      </div>
+      } @empty {
+      <div class="empty-albums">
+        <span class="material-icons">info</span>
+        <p>Este artista ainda não possui álbuns cadastrados.</p>
+      </div>
       }
-    </section>
-  } @else {
-    <div class="error-state">
-      <span class="material-icons">error</span>
-      <p>Não foi possível carregar os detalhes deste artista.</p>
-      <a routerLink="/home" class="btn-retry">Voltar para a Home</a>
     </div>
+    }
+  </section>
+  } @else {
+  <div class="error-state">
+    <span class="material-icons">error</span>
+    <p>Não foi possível carregar os detalhes deste artista.</p>
+    <a routerLink="/home" class="btn-retry">Voltar para a Home</a>
+  </div>
   }
 </div>
-
