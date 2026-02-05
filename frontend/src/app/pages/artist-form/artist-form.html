@@ -2,9 +2,15 @@
   <div class="form-card">
     <div class="form-header">
       <a routerLink="/home" class="back-link">← Voltar</a>
-      <h1>Adicionar Novo Artista</h1>
+      <h1>{{ isEditMode() ? 'Editar Artista' : 'Adicionar Novo Artista' }}</h1>
     </div>
 
+    @if (isFetching()) {
+    <div class="loading-box">
+      <span class="material-icons spinning">sync</span>
+      <p>Carregando dados...</p>
+    </div>
+    } @else {
     <form [formGroup]="artistForm" (ngSubmit)="onSubmit()" class="artist-form">
       @if (errorMessage()) {
       <div class="error-box">
@@ -12,20 +18,12 @@
       </div>
       }
 
-      <XInput
-        label="Nome do Artista"
-        placeholder="Ex: Pink Floyd, Alok, etc."
-        formControlName="name"
-      />
+      <XInput label="Nome do Artista" placeholder="Ex: Pink Floyd, Alok, etc." formControlName="name" />
 
       <div class="form-group">
         <label for="description">Descrição / Biografia</label>
-        <textarea
-          id="description"
-          formControlName="description"
-          placeholder="Conte um pouco sobre a história do artista..."
-          rows="5"
-        ></textarea>
+        <textarea id="description" formControlName="description" placeholder="Conte um pouco sobre a história do artista..."
+          rows="5"></textarea>
       </div>
 
       <div class="actions">
@@ -33,11 +31,12 @@
           @if (isLoading()) {
           Salvando...
           } @else {
-          Salvar Artista
+          {{ isEditMode() ? 'Salvar Alterações' : 'Salvar Artista' }}
           }
         </XButton>
       </div>
     </form>
+    }
   </div>
 </div>
 
