@@ -1,12 +1,11 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Album } from '../../models/album.model';
-import { XButtonComponent } from '../x-button/x-button';
 
 @Component({
   selector: 'AlbumCard',
   standalone: true,
-  imports: [CommonModule, XButtonComponent],
+  imports: [CommonModule],
   templateUrl: './album-card.html',
   styleUrl: './album-card.scss'
 })
