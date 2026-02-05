@@ -30,8 +30,22 @@ class TokenServiceTest {
     }
 
     @Test
+    void generateRefreshToken_ShouldReturnValidToken() {
+        String token = tokenService.generateRefreshToken(user);
+        assertNotNull(token);
+        assertFalse(token.isEmpty());
+    }
+
+    @Test
     void validateToken_WithValidToken_ShouldReturnUsername() {
         String token = tokenService.generateToken(user);
+        String username = tokenService.validateToken(token);
+        assertEquals("testuser", username);
+    }
+
+    @Test
+    void validateToken_WithRefreshToken_ShouldReturnUsername() {
+        String token = tokenService.generateRefreshToken(user);
         String username = tokenService.validateToken(token);
         assertEquals("testuser", username);
     }

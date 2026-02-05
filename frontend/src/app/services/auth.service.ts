@@ -16,16 +16,38 @@ export class AuthService {
         if (response.token) {
           localStorage.setItem('token', response.token);
         }
+        if (response.refreshToken) {
+          localStorage.setItem('refreshToken', response.refreshToken);
+        }
       })
     )
   }
 
+  refresh(): Observable<any> {
+    const refreshToken = this.getRefreshToken();
+    return this.http.post(`${this.apiUrl}/refresh`, { refreshToken }).pipe(
+      tap((response: any) => {
+        if (response.token) {
+          localStorage.setItem('token', response.token);
+        }
+        if (response.refreshToken) {
+          localStorage.setItem('refreshToken', response.refreshToken);
+        }
+      })
+    );
+  }
+
   logout(): void {
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
   }
 
   getToken(): string | null {
     return localStorage.getItem('token');
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
   }
 
   isLoggedIn(): boolean {

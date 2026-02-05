@@ -1,6 +1,7 @@
 package com.andre_machado.desafio_seplag_musical.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -32,7 +33,7 @@ import com.andre_machado.desafio_seplag_musical.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(ArtistController.class)
-@Import({SecurityConfigurations.class, SecurityFilter.class, CustomAuthenticationEntryPoint.class})
+@Import({SecurityConfigurations.class, SecurityFilter.class, CustomAuthenticationEntryPoint.class, com.andre_machado.desafio_seplag_musical.configuration.RateLimitFilter.class})
 class ArtistControllerTest {
 
     @Autowired
@@ -50,8 +51,22 @@ class ArtistControllerTest {
     @MockitoBean
     private UserRepository userRepository;
 
+    @MockitoBean
+    private com.andre_machado.desafio_seplag_musical.service.RateLimitService rateLimitService;
+
     @Autowired
     private ObjectMapper objectMapper;
+
+    @org.junit.jupiter.api.BeforeEach
+    void setUpRateLimit() {
+        io.github.bucket4j.Bucket bucket = io.github.bucket4j.Bucket.builder()
+                .addLimit(io.github.bucket4j.Bandwidth.builder()
+                        .capacity(100)
+                        .refillGreedy(100, java.time.Duration.ofMinutes(1))
+                        .build())
+                .build();
+        when(rateLimitService.resolveBucket(anyString())).thenReturn(bucket);
+    }
 
     @Test
     @WithMockUser

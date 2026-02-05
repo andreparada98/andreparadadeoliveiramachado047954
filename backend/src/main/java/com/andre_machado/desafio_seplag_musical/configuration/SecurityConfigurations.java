@@ -30,6 +30,9 @@ public class SecurityConfigurations {
         SecurityFilter securityFilter;
 
         @Autowired
+        RateLimitFilter rateLimitFilter;
+
+        @Autowired
         CustomAuthenticationEntryPoint authenticationEntryPoint;
 
         @Bean
@@ -42,6 +45,7 @@ public class SecurityConfigurations {
                                 .authorizeHttpRequests(authorize -> authorize
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/v1/auth/login").permitAll()
+                                                .requestMatchers(HttpMethod.POST, "/v1/auth/refresh").permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/v1/user").permitAll()
                                                 .requestMatchers("/actuator/health/**").permitAll()
                                                 .requestMatchers("/api", "/api-docs/**", "/v3/api-docs/**",
@@ -52,6 +56,7 @@ public class SecurityConfigurations {
                                 .exceptionHandling(exception -> exception
                                                 .authenticationEntryPoint(authenticationEntryPoint))
                                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                                .addFilterAfter(rateLimitFilter, SecurityFilter.class)
                                 .build();
         }
 
