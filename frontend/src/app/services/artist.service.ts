@@ -16,7 +16,7 @@ export interface ArtistRequest {
 })
 export class ArtistService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/artist`;
+  private apiUrl = `${environment.apiUrl}/v1/artist`;
 
   getArtists(filter: ArtistFilter = {}, page: number = 0, size: number = 12, sort: string = 'name,asc'): Observable<PageResponse<Artist>> {
     let params = new HttpParams()

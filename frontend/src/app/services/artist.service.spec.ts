@@ -41,7 +41,7 @@ describe('ArtistService', () => {
     });
 
     const req = httpMock.expectOne(request => 
-      request.url === `${environment.apiUrl}/artist` &&
+      request.url === `${environment.apiUrl}/v1/artist` &&
       request.params.get('name') === 'Pink' &&
       request.params.get('page') === '0'
     );
@@ -57,7 +57,7 @@ describe('ArtistService', () => {
       expect(artist.name).toBe('Pink Floyd');
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/artist/1`);
+    const req = httpMock.expectOne(`${environment.apiUrl}/v1/artist/1`);
     expect(req.request.method).toBe('GET');
     req.flush(mockArtist);
   });
@@ -70,7 +70,7 @@ describe('ArtistService', () => {
       expect(artist.id).toBe('2');
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/artist`);
+    const req = httpMock.expectOne(`${environment.apiUrl}/v1/artist`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(newArtist);
     req.flush(mockResponse);

@@ -49,7 +49,7 @@ class FileControllerTest {
         
         when(fileService.uploadFile(any())).thenReturn(response);
 
-        mockMvc.perform(multipart("/file/upload").file(file))
+        mockMvc.perform(multipart("/v1/file/upload").file(file))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("test.jpg"));
     }
@@ -62,7 +62,7 @@ class FileControllerTest {
         
         when(fileService.getFileById(id)).thenReturn(response);
 
-        mockMvc.perform(get("/file/{id}", id))
+        mockMvc.perform(get("/v1/file/{id}", id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id.toString()));
     }

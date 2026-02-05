@@ -42,7 +42,7 @@ describe('AlbumService', () => {
     });
 
     const req = httpMock.expectOne(request => 
-      request.url === `${environment.apiUrl}/album` &&
+      request.url === `${environment.apiUrl}/v1/album` &&
       request.params.get('title') === 'Dark Side'
     );
     expect(req.request.method).toBe('GET');
@@ -61,7 +61,7 @@ describe('AlbumService', () => {
       expect(album.id).toBe('album-123');
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/album`);
+    const req = httpMock.expectOne(`${environment.apiUrl}/v1/album`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(newAlbum);
     req.flush(mockResponse);

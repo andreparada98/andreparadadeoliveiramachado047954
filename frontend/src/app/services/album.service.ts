@@ -17,7 +17,7 @@ export interface AlbumRequest {
 })
 export class AlbumService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/album`;
+  private apiUrl = `${environment.apiUrl}/v1/album`;
 
   getAlbums(filter: AlbumFilter = {}, page: number = 0, size: number = 12): Observable<PageResponse<Album>> {
     let params = new HttpParams()

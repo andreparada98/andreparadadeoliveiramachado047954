@@ -40,7 +40,7 @@ describe('AuthService', () => {
       expect(localStorage.getItem('token')).toBe('fake-jwt-token');
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
+    const req = httpMock.expectOne(`${environment.apiUrl}/v1/auth/login`);
     expect(req.request.method).toBe('POST');
     req.flush(mockResponse);
   });

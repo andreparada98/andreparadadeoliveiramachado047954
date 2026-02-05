@@ -58,7 +58,7 @@ class ArtistControllerTest {
     void getAllArtists_ShouldReturnOk() throws Exception {
         when(artistService.findAll(any(), any())).thenReturn(new PageImpl<>(List.of()));
 
-        mockMvc.perform(get("/artist"))
+        mockMvc.perform(get("/v1/artist"))
                 .andExpect(status().isOk());
     }
 
@@ -69,7 +69,7 @@ class ArtistControllerTest {
         ArtistResponseDTO response = new ArtistResponseDTO(id, "Pink Floyd", "Desc", 0L);
         when(artistService.findById(id)).thenReturn(response);
 
-        mockMvc.perform(get("/artist/{id}", id))
+        mockMvc.perform(get("/v1/artist/{id}", id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Pink Floyd"));
     }
@@ -81,7 +81,7 @@ class ArtistControllerTest {
         ArtistResponseDTO response = new ArtistResponseDTO(UUID.randomUUID(), "New Artist", "New Desc", 0L);
         when(artistService.create(any())).thenReturn(response);
 
-        mockMvc.perform(post("/artist")
+        mockMvc.perform(post("/v1/artist")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -90,7 +90,7 @@ class ArtistControllerTest {
 
     @Test
     void getAllArtists_WhenUnauthenticated_ShouldReturnUnauthorized() throws Exception {
-        mockMvc.perform(get("/artist"))
+        mockMvc.perform(get("/v1/artist"))
                 .andExpect(status().isUnauthorized());
     }
 }

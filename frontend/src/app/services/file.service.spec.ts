@@ -43,7 +43,7 @@ describe('FileService', () => {
       expect(response.url).toBe('http://example.com/test.jpg');
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/file/upload`);
+    const req = httpMock.expectOne(`${environment.apiUrl}/v1/file/upload`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body instanceof FormData).toBe(true);
     req.flush(mockResponse);
@@ -62,7 +62,7 @@ describe('FileService', () => {
       expect(response.name).toBe('test.jpg');
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/file/file-123`);
+    const req = httpMock.expectOne(`${environment.apiUrl}/v1/file/file-123`);
     expect(req.request.method).toBe('GET');
     req.flush(mockResponse);
   });

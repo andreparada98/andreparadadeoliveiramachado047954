@@ -53,7 +53,7 @@ class AlbumControllerTest {
     void getAllAlbums_ShouldReturnOk() throws Exception {
         when(albumService.findAll(any(), any())).thenReturn(new PageImpl<>(List.of()));
 
-        mockMvc.perform(get("/album"))
+        mockMvc.perform(get("/v1/album"))
                 .andExpect(status().isOk());
     }
 
@@ -64,7 +64,7 @@ class AlbumControllerTest {
         AlbumResponseDTO response = new AlbumResponseDTO(id, "The Wall", LocalDateTime.now(), List.of(), null);
         when(albumService.findById(id)).thenReturn(response);
 
-        mockMvc.perform(get("/album/{id}", id))
+        mockMvc.perform(get("/v1/album/{id}", id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("The Wall"));
     }
@@ -76,7 +76,7 @@ class AlbumControllerTest {
         AlbumResponseDTO response = new AlbumResponseDTO(UUID.randomUUID(), "The Wall", LocalDateTime.now(), List.of(), null);
         when(albumService.create(any())).thenReturn(response);
 
-        mockMvc.perform(post("/album")
+        mockMvc.perform(post("/v1/album")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())

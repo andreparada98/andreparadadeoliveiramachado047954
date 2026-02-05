@@ -51,7 +51,7 @@ class UserControllerTest {
         
         when(userService.create(any())).thenReturn(response);
 
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/v1/user")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())

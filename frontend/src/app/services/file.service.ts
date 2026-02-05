@@ -16,7 +16,7 @@ export interface FileResponse {
 })
 export class FileService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/file`;
+  private apiUrl = `${environment.apiUrl}/v1/file`;
 
   upload(file: File): Observable<FileResponse> {
     const formData = new FormData();

@@ -56,7 +56,7 @@ class AuthenticationControllerTest {
         when(auth.getPrincipal()).thenReturn(user);
         when(tokenService.generateToken(user)).thenReturn("mock-token");
 
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())

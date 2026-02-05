@@ -46,6 +46,9 @@ class AlbumServiceTest {
     @Mock
     private FileRepository fileRepository;
 
+    @Mock
+    private FileService fileService;
+
     @InjectMocks
     private AlbumService albumService;
 
