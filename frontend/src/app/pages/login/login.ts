@@ -3,13 +3,14 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { XInputComponent } from '../../shared/components/x-input/x-input';
+import { XButtonComponent } from '../../shared/components/x-button/x-button';
 import { BaseComponent } from '../../shared/helpers/base-component';
 import { takeUntil } from 'rxjs';
 
 @Component({
   selector: 'XLogin',
   standalone: true,
-  imports: [ReactiveFormsModule, XInputComponent],
+  imports: [ReactiveFormsModule, XInputComponent, XButtonComponent],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })

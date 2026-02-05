@@ -22,5 +22,8 @@ public class ArtistResponseDTO {
 
     @Schema(description = "Descrição ou biografia do artista", example = "Banda britânica de rock progressivo")
     private String description;
+
+    @Schema(description = "Quantidade de álbuns do artista")
+    private Long albumCount;
 }
 

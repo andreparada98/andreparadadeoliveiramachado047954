@@ -1,0 +1,38 @@
+<div class="form-container">
+  <div class="form-card">
+    <div class="form-header">
+      <a routerLink="/home" class="back-link">← Voltar</a>
+      <h1>Adicionar Novo Álbum</h1>
+    </div>
+
+    <form [formGroup]="albumForm" (ngSubmit)="onSubmit()" class="album-form">
+      @if (errorMessage()) {
+      <div class="error-box">
+        {{ errorMessage() }}
+      </div>
+      }
+
+      <XInput label="Título do Álbum" placeholder="Ex: The Dark Side of the Moon" formControlName="title" />
+
+      <XInput label="Data de Lançamento" type="date" formControlName="releasedAt" />
+
+      <div class="form-group">
+        <XSelectManyArtists label="Artistas" placeholder="Selecione os artistas do álbum" formControlName="artistIds">
+        </XSelectManyArtists>
+        @if (albumForm.get('artistIds')?.touched && albumForm.get('artistIds')?.errors?.['required']) {
+        <span class="error-text">Selecione pelo menos um artista.</span>
+        }
+      </div>
+
+      <div class="actions">
+        <XButton type="submit" [disabled]="albumForm.invalid || isLoading()">
+          @if (isLoading()) {
+          Salvando...
+          } @else {
+          Salvar Álbum
+          }
+        </XButton>
+      </div>
+    </form>
+  </div>
+</div>

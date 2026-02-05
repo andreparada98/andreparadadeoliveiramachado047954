@@ -9,7 +9,27 @@ import org.springframework.stereotype.Repository;
 
 import com.andre_machado.desafio_seplag_musical.domain.model.Artist;
 
+import com.andre_machado.desafio_seplag_musical.domain.dto.ArtistResponseDTO;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 @Repository
 public interface ArtistRepository extends JpaRepository<Artist, UUID> {
-    Page<Artist> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    
+    @Query("SELECT new com.andre_machado.desafio_seplag_musical.domain.dto.ArtistResponseDTO(a.id, a.name, a.description, COUNT(alb)) " +
+           "FROM Artist a LEFT JOIN a.albums alb " +
+           "GROUP BY a.id, a.name, a.description")
+    Page<ArtistResponseDTO> findAllWithAlbumCount(Pageable pageable);
+
+    @Query("SELECT new com.andre_machado.desafio_seplag_musical.domain.dto.ArtistResponseDTO(a.id, a.name, a.description, COUNT(alb)) " +
+           "FROM Artist a LEFT JOIN a.albums alb " +
+           "WHERE LOWER(a.name) LIKE LOWER(CONCAT('%', :name, '%')) " +
+           "GROUP BY a.id, a.name, a.description")
+    Page<ArtistResponseDTO> findByNameContainingIgnoreCaseWithAlbumCount(@Param("name") String name, Pageable pageable);
+
+    @Query("SELECT new com.andre_machado.desafio_seplag_musical.domain.dto.ArtistResponseDTO(a.id, a.name, a.description, COUNT(alb)) " +
+           "FROM Artist a LEFT JOIN a.albums alb " +
+           "WHERE a.id = :id " +
+           "GROUP BY a.id, a.name, a.description")
+    Optional<ArtistResponseDTO> findByIdWithAlbumCount(@Param("id") UUID id);
 }

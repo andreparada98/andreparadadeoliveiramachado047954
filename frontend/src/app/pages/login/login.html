@@ -16,17 +16,18 @@
       </div>
       }
 
-      <XInput label="Email" placeholder="seu@email.com" formControlName="username" />
+      <XInput label="Usuário" placeholder="admin" formControlName="username" />
 
-      <XInput label="Password" type="password" placeholder="........" formControlName="password" />
+      <XInput label="Senha" type="password" placeholder="........" formControlName="password" />
 
-      <button type="submit" [disabled]="loginForm.invalid || isLoading()" class="btn-signin">
+
+      <XButton type="submit" [disabled]="loginForm.invalid || isLoading()">
         @if (isLoading()) {
         Carregando...
         } @else {
         Sign In
         }
-      </button>
+      </XButton>
     </form>
   </div>
 </div>

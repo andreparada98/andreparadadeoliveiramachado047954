@@ -1,0 +1,36 @@
+<div class="select-many-container" [class.disabled]="disabled()" [class.open]="isOpen()">
+  <label *ngIf="label()">{{ label() }}</label>
+
+  <div class="select-trigger" (click)="toggleDropdown()">
+    <div class="selected-area">
+      <span *ngIf="selectedIds().length > 0" class="selected-text">{{ selectedLabels() }}</span>
+      <span *ngIf="selectedIds().length === 0" class="placeholder">{{ placeholder() }}</span>
+    </div>
+    <span class="chevron material-icons">
+      {{ isOpen() ? 'expand_less' : 'expand_more' }}
+    </span>
+  </div>
+
+  <div class="dropdown-panel" *ngIf="isOpen()">
+    <div class="search-box">
+      <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Filtrar..."
+        (click)="$event.stopPropagation()">
+    </div>
+
+    <div class="options-list">
+      <div *ngFor="let option of filteredOptions()" class="option-item" [class.selected]="isSelected(option.id)"
+        (click)="toggleOption(option.id); $event.stopPropagation()">
+        <div class="checkbox">
+          <span class="check-icon material-icons" *ngIf="isSelected(option.id)">
+            check
+          </span>
+        </div>
+        <span class="option-label">{{ option.label }}</span>
+      </div>
+
+      <div *ngIf="filteredOptions().length === 0" class="no-options">
+        Nenhuma opção encontrada
+      </div>
+    </div>
+  </div>
+</div>

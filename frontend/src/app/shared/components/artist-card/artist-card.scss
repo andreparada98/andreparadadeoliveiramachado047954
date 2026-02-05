@@ -1,0 +1,86 @@
+.artist-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: box-shadow 0.2s, transform 0.1s;
+  position: relative;
+
+  &:hover {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    transform: translateY(-2px);
+  }
+
+  .card-content {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    cursor: pointer;
+    flex: 1;
+  }
+
+  .avatar-circle {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .info {
+    .name {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .album-count {
+      margin: 0.125rem 0 0;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 0.5rem;
+    
+    .action-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s;
+      background-color: transparent;
+      color: #9ca3af;
+
+      .material-icons {
+        font-size: 1.25rem;
+      }
+
+      &.view:hover {
+        background-color: #f5f3ff;
+        color: #6366f1;
+      }
+
+      &.edit:hover {
+        background-color: #fef2f2;
+        color: #ef4444;
+      }
+    }
+  }
+}
+

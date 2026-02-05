@@ -1,0 +1,51 @@
+<div class="details-container">
+  <header class="details-header">
+    <a routerLink="/home" class="back-link">
+      <span class="material-icons">arrow_back</span>
+      Voltar para a Home
+    </a>
+  </header>
+
+  @if (artist()) {
+  <section class="artist-hero">
+    <div class="artist-info">
+      <div class="avatar-large">
+        {{ artist()?.name?.charAt(0)?.toUpperCase() }}
+      </div>
+      <div class="text-content">
+        <h1>{{ artist()?.name }}</h1>
+        <p class="description">{{ artist()?.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="albums-section">
+    <div class="section-title">
+      <span class="material-icons">album</span>
+      <h2>Álbuns</h2>
+    </div>
+
+    <div class="albums-grid">
+      @for (album of albums(); track album.id) {
+      <div class="album-card">
+        <div class="album-cover-placeholder">
+          <span class="material-icons">music_note</span>
+        </div>
+        <div class="album-details">
+          <h3 class="album-title">{{ album.title }}</h3>
+          <p class="album-year">{{ album.releasedAt | date:'yyyy' }}</p>
+        </div>
+      </div>
+      } @empty {
+      <p class="no-data">Nenhum álbum encontrado para este artista.</p>
+      }
+    </div>
+  </section>
+  } @else {
+  <div class="loading-state">
+    <span class="material-icons spinning">sync</span>
+    <p>Carregando detalhes do artista...</p>
+  </div>
+  }
+</div>
+

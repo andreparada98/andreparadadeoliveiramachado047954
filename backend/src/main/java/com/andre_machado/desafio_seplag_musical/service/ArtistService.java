@@ -24,20 +24,17 @@ public class ArtistService {
 
     @Transactional(readOnly = true)
     public Page<ArtistResponseDTO> findAll(ArtistFilterDTO filter, Pageable pageable) {
-        Page<Artist> artists;
         if (filter.getName() != null && !filter.getName().isBlank()) {
-            artists = artistRepository.findByNameContainingIgnoreCase(filter.getName(), pageable);
+            return artistRepository.findByNameContainingIgnoreCaseWithAlbumCount(filter.getName(), pageable);
         } else {
-            artists = artistRepository.findAll(pageable);
+            return artistRepository.findAllWithAlbumCount(pageable);
         }
-        return artists.map(artist -> new ArtistResponseDTO(artist.getId(), artist.getName(), artist.getDescription()));
     }
 
     @Transactional(readOnly = true)
     public ArtistResponseDTO findById(UUID id) {
-        Artist artist = artistRepository.findById(id)
+        return artistRepository.findByIdWithAlbumCount(id)
                 .orElseThrow(() -> new EntityNotFoundException("Artist not found with id: " + id));
-        return new ArtistResponseDTO(artist.getId(), artist.getName(), artist.getDescription());
     }
 
     @Transactional
@@ -47,7 +44,7 @@ public class ArtistService {
         artist.setDescription(request.getDescription());
 
         Artist savedArtist = artistRepository.save(artist);
-        return new ArtistResponseDTO(savedArtist.getId(), savedArtist.getName(), savedArtist.getDescription());
+        return new ArtistResponseDTO(savedArtist.getId(), savedArtist.getName(), savedArtist.getDescription(), 0L);
     }
 
     @Transactional
@@ -59,6 +56,6 @@ public class ArtistService {
         artist.setDescription(request.getDescription());
 
         Artist updatedArtist = artistRepository.save(artist);
-        return new ArtistResponseDTO(updatedArtist.getId(), updatedArtist.getName(), updatedArtist.getDescription());
+        return findById(updatedArtist.getId());
     }
 }

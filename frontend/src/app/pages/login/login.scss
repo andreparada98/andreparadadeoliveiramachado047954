@@ -61,32 +61,4 @@
     text-align: center;
     border: 1px solid #fecaca;
   }
-
-  .btn-signin {
-    width: 100%;
-    padding: 0.875rem;
-    background-color: #6366f1;
-    color: white;
-    border: none;
-    border-radius: 9999px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 1rem;
-
-    &:hover:not(:disabled) {
-      background-color: #4f46e5;
-      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    }
-
-    &:active:not(:disabled) {
-      transform: scale(0.98);
-    }
-
-    &:disabled {
-      background-color: #a5b4fc;
-      cursor: not-allowed;
-    }
-  }
 }

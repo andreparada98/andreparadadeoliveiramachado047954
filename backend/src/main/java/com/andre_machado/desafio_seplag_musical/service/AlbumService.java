@@ -30,13 +30,21 @@ public class AlbumService {
 
     @Transactional(readOnly = true)
     public Page<AlbumResponseDTO> findAll(AlbumFilterDTO filter, Pageable pageable) {
-        Page<Album> albums;
-        if (filter.getTitle() != null && !filter.getTitle().isBlank()) {
-            albums = albumRepository.findByTitleContainingIgnoreCase(filter.getTitle(), pageable);
-        } else {
-            albums = albumRepository.findAll(pageable);
+        if (filter.getArtistId() != null) {
+            if (filter.getTitle() != null && !filter.getTitle().isBlank()) {
+                return albumRepository
+                        .findByArtistIdAndTitleContainingIgnoreCase(filter.getArtistId(), filter.getTitle(), pageable)
+                        .map(this::convertToResponseDTO);
+            }
+            return findByArtistId(filter.getArtistId(), pageable);
         }
-        return albums.map(this::convertToResponseDTO);
+
+        if (filter.getTitle() != null && !filter.getTitle().isBlank()) {
+            return albumRepository.findByTitleContainingIgnoreCase(filter.getTitle(), pageable)
+                    .map(this::convertToResponseDTO);
+        }
+
+        return albumRepository.findAll(pageable).map(this::convertToResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -51,7 +59,7 @@ public class AlbumService {
         Album album = new Album();
         album.setTitle(request.getTitle());
         album.setReleasedAt(request.getReleasedAt());
-        
+
         if (request.getArtistIds() != null && !request.getArtistIds().isEmpty()) {
             List<Artist> artists = artistRepository.findAllById(request.getArtistIds());
             album.setArtists(artists);
@@ -78,6 +86,12 @@ public class AlbumService {
         return convertToResponseDTO(updatedAlbum);
     }
 
+    @Transactional(readOnly = true)
+    public Page<AlbumResponseDTO> findByArtistId(UUID artistId, Pageable pageable) {
+        return albumRepository.findByArtistId(artistId, pageable)
+                .map(this::convertToResponseDTO);
+    }
+
     private AlbumResponseDTO convertToResponseDTO(Album album) {
         List<ArtistResponseDTO> artists = album.getArtists().stream()
                 .map(artist -> new ArtistResponseDTO(artist.getId(), artist.getName(), artist.getDescription()))
@@ -87,8 +101,6 @@ public class AlbumService {
                 album.getId(),
                 album.getTitle(),
                 album.getReleasedAt(),
-                artists
-        );
+                artists);
     }
 }
-

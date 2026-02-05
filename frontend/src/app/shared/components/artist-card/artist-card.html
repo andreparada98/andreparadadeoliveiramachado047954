@@ -1,0 +1,21 @@
+<div class="artist-card">
+  <div class="card-content" (click)="onClick()">
+    <div class="avatar-circle">
+      {{ initial }}
+    </div>
+    <div class="info">
+      <h3 class="name">{{ artist().name }}</h3>
+      <p class="album-count">{{ artist().albumCount }} {{ artist().albumCount === 1 ? 'album' : 'albums' }}</p>
+    </div>
+  </div>
+  
+  <div class="card-actions">
+    <button class="action-btn view" title="Visualizar" (click)="onView($event)">
+      <span class="material-icons">visibility</span>
+    </button>
+    <button class="action-btn edit" title="Editar" (click)="onEdit($event)">
+      <span class="material-icons">edit</span>
+    </button>
+  </div>
+</div>
+

@@ -1,0 +1,54 @@
+<main class="home-container">
+    <div class="actions-bar">
+        <div class="search-wrapper">
+            <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
+                placeholder="Search artists..." class="search-input" />
+        </div>
+
+        <div class="buttons-group">
+            <XButton variant="sort" (clicked)="onSort()">
+                <span class="sort-icon material-icons">
+                    {{ sortOrder() === 'asc' ? 'north' : 'south' }}
+                </span>
+                A-Z
+            </XButton>
+
+            <XButton (clicked)="onAddArtist()">
+                + Adicionar Artista
+            </XButton>
+
+            <XButton (clicked)="onAddAlbum()">
+                + Adicionar Álbum
+            </XButton>
+        </div>
+    </div>
+
+    <div class="artists-grid">
+        @for (artist of artists(); track artist.id) {
+        <div class="artist-item-wrapper" [class.selected]="selectedArtist()?.id === artist.id">
+            <ArtistCard [artist]="artist" (clicked)="onArtistClick($event)" (view)="onViewArtist($event)"
+                (edit)="onEditArtist($event)"></ArtistCard>
+
+            @if (selectedArtist()?.id === artist.id) {
+            <div class="artist-albums-mobile">
+                @if (isLoadingAlbums()) {
+                <div class="albums-loading">Carregando álbuns...</div>
+                }
+                <div class="albums-list-mini">
+                    @for (album of albums(); track album.id) {
+                    <div class="album-mini-item">
+                        <span class="album-title">{{ album.title }}</span>
+                        <span class="album-date">{{ album.releasedAt | date:'yyyy' }}</span>
+                    </div>
+                    } @empty {
+                    @if (!isLoadingAlbums()) {
+                    <p class="no-albums">Nenhum álbum encontrado.</p>
+                    }
+                    }
+                </div>
+            </div>
+            }
+        </div>
+        }
+    </div>
+</main>
