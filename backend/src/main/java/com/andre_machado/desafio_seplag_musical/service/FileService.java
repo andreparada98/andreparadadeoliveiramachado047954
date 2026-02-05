@@ -1,9 +1,11 @@
 package com.andre_machado.desafio_seplag_musical.service;
 
 import io.minio.BucketExistsArgs;
+import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.http.Method;
 import com.andre_machado.desafio_seplag_musical.domain.dto.FileResponseDTO;
 import com.andre_machado.desafio_seplag_musical.domain.model.File;
 import com.andre_machado.desafio_seplag_musical.repository.FileRepository;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -40,15 +43,7 @@ public class FileService {
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
             }
 
-            String policy = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:GetBucketLocation\",\"s3:ListBucket\"],\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"*\"]},\"Resource\":[\"arn:aws:s3:::"
-                    + bucketName
-                    + "\"]},{\"Action\":[\"s3:GetObject\"],\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"*\"]},\"Resource\":[\"arn:aws:s3:::"
-                    + bucketName + "/*\"]}]}";
-            minioClient.setBucketPolicy(
-                    io.minio.SetBucketPolicyArgs.builder()
-                            .bucket(bucketName)
-                            .config(policy)
-                            .build());
+            // Removida a política pública. Agora o acesso é apenas via URL assinada.
 
             String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
 
@@ -62,13 +57,11 @@ public class FileService {
                                 .build());
             }
 
-            String url = getFileUrl(fileName);
-
             File fileEntity = new File();
             fileEntity.setName(fileName);
             fileEntity.setSize(file.getSize());
             fileEntity.setMimeType(file.getContentType());
-            fileEntity.setUrl(url);
+            fileEntity.setUrl(fileName); // Salvamos apenas o nome do arquivo (key)
 
             File savedFile = fileRepository.save(fileEntity);
 
@@ -77,7 +70,7 @@ public class FileService {
                     savedFile.getName(),
                     savedFile.getSize(),
                     savedFile.getMimeType(),
-                    savedFile.getUrl());
+                    getPresignedUrl(fileName));
         } catch (Exception e) {
             log.error("Error uploading file to MinIO", e);
             throw new RuntimeException("Could not upload file", e);
@@ -93,10 +86,39 @@ public class FileService {
                 file.getName(),
                 file.getSize(),
                 file.getMimeType(),
-                file.getUrl());
+                getPresignedUrl(file.getUrl()));
     }
 
-    public String getFileUrl(String fileName) {
-        return String.format("%s/%s/%s", minioPublicUrl, bucketName, fileName);
+    public String getPresignedUrl(String fileName) {
+        if (fileName == null || fileName.isBlank()) {
+            return null;
+        }
+
+        // Se o fileName já for uma URL completa, extraímos apenas o nome do arquivo
+        // Isso ajuda na migração de dados antigos que tinham a URL completa
+        if (fileName.contains("/")) {
+            fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
+        }
+
+        try {
+            String url = minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(bucketName)
+                            .object(fileName)
+                            .expiry(30, TimeUnit.MINUTES)
+                            .build());
+
+            // Se a URL gerada usar o endpoint interno (ex: http://minio:9000),
+            // substituímos pelo endpoint público para o frontend funcionar.
+            if (minioEndpoint != null && minioPublicUrl != null && url.contains(minioEndpoint)) {
+                url = url.replace(minioEndpoint, minioPublicUrl);
+            }
+
+            return url;
+        } catch (Exception e) {
+            log.error("Error generating presigned URL for file: {}", fileName, e);
+            return null;
+        }
     }
 }

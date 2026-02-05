@@ -30,6 +30,7 @@ public class AlbumService {
     private final AlbumRepository albumRepository;
     private final ArtistRepository artistRepository;
     private final FileRepository fileRepository;
+    private final FileService fileService;
 
     @Transactional(readOnly = true)
     public Page<AlbumResponseDTO> findAll(AlbumFilterDTO filter, Pageable pageable) {
@@ -119,11 +120,16 @@ public class AlbumService {
                 .map(artist -> new ArtistResponseDTO(artist.getId(), artist.getName(), artist.getDescription(), null))
                 .collect(Collectors.toList());
 
+        String coverUrl = null;
+        if (album.getCovers() != null && !album.getCovers().isEmpty()) {
+            coverUrl = fileService.getPresignedUrl(album.getCovers().get(0).getUrl());
+        }
+
         return new AlbumResponseDTO(
                 album.getId(),
                 album.getTitle(),
                 album.getReleasedAt(),
                 artists,
-                album.getCoverUrl());
+                coverUrl);
     }
 }

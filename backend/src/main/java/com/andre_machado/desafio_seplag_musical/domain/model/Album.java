@@ -20,7 +20,7 @@ public class Album extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime releasedAt;
 
-    @Formula("(SELECT f.url FROM file f WHERE f.album_id = id LIMIT 1)")
+    @Transient
     private String coverUrl;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
