@@ -28,7 +28,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
         // monitoramento
         String path = request.getRequestURI();
         if (path.startsWith("/actuator") || path.startsWith("/api") || path.startsWith("/api-docs")
-                || path.startsWith("/swagger-ui")) {
+                || path.startsWith("/swagger-ui") || path.startsWith("/ws-notifications")) {
             filterChain.doFilter(request, response);
             return;
         }

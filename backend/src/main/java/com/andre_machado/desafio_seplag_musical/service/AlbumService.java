@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class AlbumService {
     private final ArtistRepository artistRepository;
     private final FileRepository fileRepository;
     private final FileService fileService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Transactional(readOnly = true)
     public Page<AlbumResponseDTO> findAll(AlbumFilterDTO filter, Pageable pageable) {
@@ -79,7 +81,10 @@ public class AlbumService {
             fileRepository.save(file);
         }
 
-        return convertToResponseDTO(savedAlbum);
+        AlbumResponseDTO response = convertToResponseDTO(savedAlbum);
+        messagingTemplate.convertAndSend("/topic/albums", response);
+
+        return response;
     }
 
     @Transactional

@@ -48,6 +48,7 @@ public class SecurityConfigurations {
                                                 .requestMatchers(HttpMethod.POST, "/v1/auth/refresh").permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/v1/user").permitAll()
                                                 .requestMatchers("/actuator/health/**").permitAll()
+                                                .requestMatchers("/ws-notifications/**").permitAll()
                                                 .requestMatchers("/api", "/api-docs/**", "/v3/api-docs/**",
                                                                 "/swagger-ui/**",
                                                                 "/swagger-ui.html")

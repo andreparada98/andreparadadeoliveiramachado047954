@@ -49,6 +49,9 @@ class AlbumServiceTest {
     @Mock
     private FileService fileService;
 
+    @Mock
+    private org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
+
     @InjectMocks
     private AlbumService albumService;
 
