@@ -41,24 +41,27 @@ public class RateLimitFilter extends OncePerRequestFilter {
         } else {
             response.setStatus(429); // Too Many Requests
             response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"Too many requests. Limit is 10 per minute per user.\"}");
+            response.getWriter().write("{\"error\": \"Too many requests. Limit is 10 per endpoint per user.\"}");
         }
     }
 
     private String resolveClientKey(HttpServletRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String identifier;
 
-        // Se o usuário estiver autenticado, usa o username como chave
         if (authentication != null && authentication.isAuthenticated()
                 && !"anonymousUser".equals(authentication.getPrincipal())) {
-            return authentication.getName();
+            identifier = authentication.getName();
+        } else {
+            String remoteAddr = request.getHeader("X-Forwarded-For");
+            if (remoteAddr == null || remoteAddr.isEmpty()) {
+                remoteAddr = request.getRemoteAddr();
+            }
+            identifier = remoteAddr;
         }
 
-        // Caso contrário, usa o IP do cliente
-        String remoteAddr = request.getHeader("X-Forwarded-For");
-        if (remoteAddr == null || remoteAddr.isEmpty()) {
-            remoteAddr = request.getRemoteAddr();
-        }
-        return remoteAddr;
+        // A chave agora é composta por: Identificador (User/IP) + Método + Caminho
+        // Isso garante que o limite de 10 seja POR API (endpoint)
+        return identifier + ":" + request.getMethod() + ":" + request.getRequestURI();
     }
 }

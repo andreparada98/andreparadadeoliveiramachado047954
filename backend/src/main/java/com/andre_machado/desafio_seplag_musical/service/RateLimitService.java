@@ -19,7 +19,6 @@ public class RateLimitService {
     }
 
     private Bucket newBucket(String key) {
-        // Configuração: 10 requisições por minuto
         return Bucket.builder()
                 .addLimit(Bandwidth.builder()
                         .capacity(10)
@@ -28,4 +27,3 @@ public class RateLimitService {
                 .build();
     }
 }
-
