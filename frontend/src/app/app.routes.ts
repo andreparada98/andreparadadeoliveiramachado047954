@@ -1,11 +1,18 @@
 import { Routes } from '@angular/router';
 import { DefaultLayoutComponent } from './shared/layouts/default-layout/default-layout';
+import { authGuard } from './shared/guards/auth.guard';
+import { loginGuard } from './shared/guards/login.guard';
 
 export const routes: Routes = [
-  { path: 'login', loadComponent: () => import('./pages/login/login').then(m => m.LoginComponent)},
+  { 
+    path: 'login', 
+    canActivate: [loginGuard], 
+    loadComponent: () => import('./pages/login/login').then(m => m.LoginComponent)
+  },
   {
     path: '',
     component: DefaultLayoutComponent,
+    canActivate: [authGuard], 
     children: [
       { path: 'home', loadComponent: () => import('./pages/home/home').then(m => m.HomeComponent)},
       { path: 'artist/new', loadComponent: () => import('./pages/artist-form/artist-form').then(m => m.ArtistFormComponent)},
@@ -17,5 +24,6 @@ export const routes: Routes = [
       { path: 'album/:id', loadComponent: () => import('./pages/album-detail/album-detail').then(m => m.AlbumDetailComponent)},
       { path: '', redirectTo: 'home', pathMatch: 'full' }
     ]
-  }
+  },
+  { path: '**', redirectTo: 'home' } 
 ];
