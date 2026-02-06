@@ -79,7 +79,6 @@ describe('AlbumFormComponent', () => {
       cover: file
     });
     
-    // Simular upload com sucesso chamando o callback
     fileFacadeSpy.uploadFile.mockImplementation((f: any, callback: any) => {
       callback({ id: 'file-123' });
     });

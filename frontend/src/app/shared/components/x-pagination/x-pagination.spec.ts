@@ -15,7 +15,6 @@ describe('XPaginationComponent', () => {
     fixture = TestBed.createComponent(XPaginationComponent);
     component = fixture.componentInstance;
     
-    // Set required inputs
     fixture.componentRef.setInput('currentPage', 0);
     fixture.componentRef.setInput('pageSize', 10);
     fixture.componentRef.setInput('totalPages', 5);

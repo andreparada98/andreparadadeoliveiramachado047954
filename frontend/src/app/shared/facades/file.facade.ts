@@ -9,7 +9,6 @@ import { BaseComponent } from '../helpers/base-component';
 export class FileFacade extends BaseComponent {
   private fileService = inject(FileService);
 
-  // Estados gerenciados pela Facade
   isUploading = signal(false);
   errorMessage = signal<string | null>(null);
   lastUploadedFile = signal<FileResponse | null>(null);

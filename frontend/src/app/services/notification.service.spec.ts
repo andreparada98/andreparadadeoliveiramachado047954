@@ -14,7 +14,6 @@ describe('NotificationService', () => {
   });
 
   it('should add and remove notifications', () => {
-    // Accessing private method for testing purpose or just triggering via mock
     (service as any).addNotification('Test message');
     expect(service.notifications().length).toBe(1);
     expect(service.notifications()[0].message).toBe('Test message');

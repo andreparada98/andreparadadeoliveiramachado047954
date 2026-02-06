@@ -64,7 +64,7 @@ export class ArtistFacade extends BaseComponent {
       });
   }
 
-  loadArtistAlbums(artistId: string): void {
+  loadArtistAlbums(artistId: string, callback?: (albums: Album[]) => void): void {
     this.isLoadingAlbums.set(true);
     this.artistService.getArtistAlbums(artistId)
       .pipe(
@@ -72,7 +72,10 @@ export class ArtistFacade extends BaseComponent {
         finalize(() => this.isLoadingAlbums.set(false))
       )
       .subscribe({
-        next: (response) => this.artistAlbums.set(response.content),
+        next: (response) => {
+          this.artistAlbums.set(response.content);
+          if (callback) callback(response.content);
+        },
         error: (err) => {
           console.error(`ArtistFacade: Error fetching albums for artist ${artistId}:`, err);
           this.errorMessage.set('Erro ao carregar álbuns do artista.');

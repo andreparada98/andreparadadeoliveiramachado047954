@@ -43,7 +43,6 @@ export class NotificationService {
     const id = Date.now();
     this.notifications.update(prev => [...prev, { id, message }]);
     
-    // Auto-remove after 5 seconds
     setTimeout(() => {
       this.removeNotification(id);
     }, 5000);

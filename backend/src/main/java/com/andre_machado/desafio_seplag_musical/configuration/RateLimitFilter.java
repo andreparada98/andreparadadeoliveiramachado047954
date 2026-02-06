@@ -24,8 +24,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Ignorar endpoints de health check e documentação para não bloquear
-        // monitoramento
         String path = request.getRequestURI();
         if (path.startsWith("/actuator") || path.startsWith("/api") || path.startsWith("/api-docs")
                 || path.startsWith("/swagger-ui") || path.startsWith("/ws-notifications")) {
@@ -39,7 +37,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
         if (bucket.tryConsume(1)) {
             filterChain.doFilter(request, response);
         } else {
-            response.setStatus(429); // Too Many Requests
+            response.setStatus(429);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Too many requests. Limit is 10 per endpoint per user.\"}");
         }
@@ -60,8 +58,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
             identifier = remoteAddr;
         }
 
-        // A chave agora é composta por: Identificador (User/IP) + Método + Caminho
-        // Isso garante que o limite de 10 seja POR API (endpoint)
         return identifier + ":" + request.getMethod() + ":" + request.getRequestURI();
     }
 }

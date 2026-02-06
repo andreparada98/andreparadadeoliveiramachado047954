@@ -5,7 +5,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,21 +38,25 @@ public class AlbumService {
 
     @Transactional(readOnly = true)
     public Page<AlbumResponseDTO> findAll(AlbumFilterDTO filter, Pageable pageable) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "updatedAt").and(Sort.by(Sort.Direction.ASC, "title"));
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
         if (filter.getArtistId() != null) {
             if (filter.getTitle() != null && !filter.getTitle().isBlank()) {
                 return albumRepository
-                        .findByArtistIdAndTitleContainingIgnoreCase(filter.getArtistId(), filter.getTitle(), pageable)
+                        .findByArtistIdAndTitleContainingIgnoreCase(filter.getArtistId(), filter.getTitle(),
+                                sortedPageable)
                         .map(this::convertToResponseDTO);
             }
-            return findByArtistId(filter.getArtistId(), pageable);
+            return findByArtistId(filter.getArtistId(), sortedPageable);
         }
 
         if (filter.getTitle() != null && !filter.getTitle().isBlank()) {
-            return albumRepository.findByTitleContainingIgnoreCase(filter.getTitle(), pageable)
+            return albumRepository.findByTitleContainingIgnoreCase(filter.getTitle(), sortedPageable)
                     .map(this::convertToResponseDTO);
         }
 
-        return albumRepository.findAll(pageable).map(this::convertToResponseDTO);
+        return albumRepository.findAll(sortedPageable).map(this::convertToResponseDTO);
     }
 
     @Transactional(readOnly = true)

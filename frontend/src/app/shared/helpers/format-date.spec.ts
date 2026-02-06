@@ -2,7 +2,7 @@ import { formatDate } from './format-date';
 
 describe('formatDate', () => {
   it('should format Date object to DD/MM/YYYY', () => {
-    const date = new Date(2024, 0, 15); // Jan 15, 2024
+    const date = new Date(2024, 0, 15);
     expect(formatDate(date)).toBe('15/01/2024');
   });
 
@@ -12,7 +12,7 @@ describe('formatDate', () => {
   });
 
   it('should pad single digits with zero', () => {
-    const date = new Date(2024, 4, 5); // May 5, 2024
+    const date = new Date(2024, 4, 5);
     expect(formatDate(date)).toBe('05/05/2024');
   });
 });

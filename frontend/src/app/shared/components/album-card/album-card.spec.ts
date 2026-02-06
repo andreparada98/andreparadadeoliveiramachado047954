@@ -37,7 +37,6 @@ describe('AlbumCardComponent', () => {
 
   it('should display formatted release date', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    // Date pipe will format it based on locale, usually dd/MM/yyyy in this project's context or default
     expect(compiled.querySelector('.album-date')?.textContent).toBeTruthy();
   });
 

@@ -57,12 +57,15 @@ export class ArtistFormComponent extends BaseComponent implements OnInit {
 
   loadArtistData(id: string) {
     this.artistFacade.loadArtistById(id, (artist) => {
-      this.artistFacade.loadArtistAlbums(id);
-      // Usando efeito para patchear o form quando albums carregarem ou patcheando direto aqui se preferir
-      // Por simplicidade, vamos usar o callback do facade que agora pode ser estendido
       this.artistForm.patchValue({
         name: artist.name,
         description: artist.description
+      });
+
+      this.artistFacade.loadArtistAlbums(id, (albums) => {
+        this.artistForm.patchValue({
+          albumIds: albums.map(album => album.id)
+        });
       });
     });
   }

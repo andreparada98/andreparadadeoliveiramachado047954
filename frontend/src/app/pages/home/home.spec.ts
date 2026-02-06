@@ -74,7 +74,6 @@ describe('HomeComponent', () => {
     const artist = mockArtists[0];
     component.onArtistClick(artist);
     expect(component.selectedArtist()).toEqual(artist);
-    // O efeito chama loadArtistAlbums
     await new Promise(resolve => setTimeout(resolve, 50));
     expect(artistFacadeSpy.loadArtistAlbums).toHaveBeenCalledWith(artist.id);
   });

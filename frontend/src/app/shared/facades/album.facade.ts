@@ -10,7 +10,6 @@ import { BaseComponent } from '../helpers/base-component';
 export class AlbumFacade extends BaseComponent {
   private albumService = inject(AlbumService);
 
-  // Estados gerenciados pela Facade
   albums = signal<Album[]>([]);
   totalElements = signal(0);
   totalPages = signal(0);

@@ -4,15 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
@@ -32,13 +29,12 @@ class FileServiceTest {
     @Mock
     private FileRepository fileRepository;
 
-    @InjectMocks
     private FileService fileService;
 
     @BeforeEach
     void setUp() {
+        fileService = new FileService(minioClient, fileRepository);
         ReflectionTestUtils.setField(fileService, "bucketName", "test-bucket");
-        ReflectionTestUtils.setField(fileService, "minioPublicUrl", "http://localhost:9000");
     }
 
     @Test
@@ -49,7 +45,7 @@ class FileServiceTest {
         savedFile.setName("test.jpg");
         savedFile.setSize(mockFile.getSize());
         savedFile.setMimeType(mockFile.getContentType());
-        savedFile.setUrl("http://localhost:9000/test-bucket/test.jpg");
+        savedFile.setUrl("test.jpg");
 
         when(minioClient.bucketExists(any())).thenReturn(true);
         when(fileRepository.save(any(File.class))).thenReturn(savedFile);
@@ -68,7 +64,7 @@ class FileServiceTest {
         File file = new File();
         file.setId(id);
         file.setName("test.jpg");
-        file.setUrl("http://url.com");
+        file.setUrl("test.jpg");
         file.setMimeType("image/jpeg");
 
         when(fileRepository.findById(id)).thenReturn(Optional.of(file));
@@ -87,4 +83,3 @@ class FileServiceTest {
         assertThrows(RuntimeException.class, () -> fileService.getFileById(id));
     }
 }
-

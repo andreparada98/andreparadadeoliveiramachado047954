@@ -46,7 +46,7 @@ describe('ArtistDetailComponent', () => {
   });
 
   it('should call facade to load artist and albums on init', () => {
-    fixture.detectChanges(); // triggers ngOnInit
+    fixture.detectChanges();
 
     expect(component.artistId()).toBe('123');
     expect(artistFacadeSpy.loadArtistById).toHaveBeenCalledWith('123');

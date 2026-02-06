@@ -2,7 +2,6 @@ package com.andre_machado.desafio_seplag_musical.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
@@ -21,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import com.andre_machado.desafio_seplag_musical.domain.dto.AlbumFilterDTO;
 import com.andre_machado.desafio_seplag_musical.domain.dto.AlbumRequestDTO;
@@ -78,16 +78,20 @@ class AlbumServiceTest {
     void findAll_ShouldReturnPageOfAlbums() {
         AlbumFilterDTO filter = new AlbumFilterDTO();
         Pageable pageable = PageRequest.of(0, 10);
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "updatedAt").and(Sort.by(Sort.Direction.ASC, "title"));
+        Pageable expectedPageable = PageRequest.of(0, 10, sort);
+
         Page<Album> page = new PageImpl<>(List.of(album));
 
-        when(albumRepository.findAll(pageable)).thenReturn(page);
+        when(albumRepository.findAll(expectedPageable)).thenReturn(page);
 
         Page<AlbumResponseDTO> result = albumService.findAll(filter, pageable);
 
         assertNotNull(result);
         assertEquals(1, result.getContent().size());
         assertEquals("The Wall", result.getContent().get(0).getTitle());
-        verify(albumRepository).findAll(pageable);
+        verify(albumRepository).findAll(expectedPageable);
     }
 
     @Test
@@ -111,7 +115,7 @@ class AlbumServiceTest {
     @Test
     void create_ShouldSaveAndReturnAlbum() {
         AlbumRequestDTO request = new AlbumRequestDTO("The Wall", LocalDateTime.now(), List.of(artist.getId()), null);
-        
+
         when(artistRepository.findAllById(any())).thenReturn(List.of(artist));
         when(albumRepository.save(any(Album.class))).thenReturn(album);
 
@@ -124,8 +128,9 @@ class AlbumServiceTest {
 
     @Test
     void update_ShouldUpdateAndReturnAlbum() {
-        AlbumRequestDTO request = new AlbumRequestDTO("Updated Title", LocalDateTime.now(), List.of(artist.getId()), null);
-        
+        AlbumRequestDTO request = new AlbumRequestDTO("Updated Title", LocalDateTime.now(), List.of(artist.getId()),
+                null);
+
         when(albumRepository.findById(albumId)).thenReturn(Optional.of(album));
         when(artistRepository.findAllById(any())).thenReturn(List.of(artist));
         when(albumRepository.save(any(Album.class))).thenReturn(album);
@@ -154,4 +159,3 @@ class AlbumServiceTest {
         assertEquals(album, file.getAlbum());
     }
 }
-
