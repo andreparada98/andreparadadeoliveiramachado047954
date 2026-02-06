@@ -14,28 +14,28 @@
             </XButton>
 
             <XButton (clicked)="onAddArtist()">
-                + Adicionar Artista
+                + <span class="hide-mobile">Adicionar </span>Artista
             </XButton>
 
             <XButton (clicked)="onAddAlbum()">
-                + Adicionar Álbum
+                + <span class="hide-mobile">Adicionar </span>Álbum
             </XButton>
         </div>
     </div>
 
     <div class="artists-grid">
-        @for (artist of artists(); track artist.id) {
+        @for (artist of artistFacade.artists(); track artist.id) {
         <div class="artist-item-wrapper" [class.selected]="selectedArtist()?.id === artist.id">
             <ArtistCard [artist]="artist" (clicked)="onArtistClick($event)" (view)="onViewArtist($event)"
                 (edit)="onEditArtist($event)"></ArtistCard>
 
             @if (selectedArtist()?.id === artist.id) {
             <div class="artist-albums-mobile">
-                @if (isLoadingAlbums()) {
+                @if (artistFacade.isLoadingAlbums()) {
                 <div class="albums-loading">Carregando álbuns...</div>
                 }
                 <div class="albums-list-mini">
-                    @for (album of albums(); track album.id) {
+                    @for (album of artistFacade.artistAlbums(); track album.id) {
                     <div class="album-mini-item">
                         <div class="album-info-group">
                             <div class="album-mini-cover">
@@ -50,7 +50,7 @@
                         <span class="album-date">{{ album.releasedAt | date:'yyyy' }}</span>
                     </div>
                     } @empty {
-                    @if (!isLoadingAlbums()) {
+                    @if (!artistFacade.isLoadingAlbums()) {
                     <p class="no-albums">Nenhum álbum encontrado.</p>
                     }
                     }
@@ -61,7 +61,8 @@
         }
     </div>
 
-    <XPagination [currentPage]="currentPage()" [pageSize]="pageSize()" [totalPages]="totalPages()"
-        [totalElements]="totalElements()" (pageChange)="onPageChange($event)" (pageSizeChange)="pageSize.set($event)">
+    <XPagination [currentPage]="currentPage()" [pageSize]="pageSize()" [totalPages]="artistFacade.totalPages()"
+        [totalElements]="artistFacade.totalElements()" (pageChange)="onPageChange($event)"
+        (pageSizeChange)="pageSize.set($event)">
     </XPagination>
 </main>

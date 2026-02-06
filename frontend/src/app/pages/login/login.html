@@ -10,9 +10,9 @@
     <p class="subtitle">Welcome back</p>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-      @if (errorMessage()) {
+      @if (authFacade.errorMessage()) {
       <div class="error-message">
-        {{ errorMessage() }}
+        {{ authFacade.errorMessage() }}
       </div>
       }
 
@@ -21,8 +21,8 @@
       <XInput label="Senha" type="password" placeholder="........" formControlName="password" />
 
 
-      <XButton type="submit" [disabled]="loginForm.invalid || isLoading()">
-        @if (isLoading()) {
+      <XButton type="submit" [disabled]="loginForm.invalid || authFacade.isLoading()">
+        @if (authFacade.isLoading()) {
         Carregando...
         } @else {
         Sign In

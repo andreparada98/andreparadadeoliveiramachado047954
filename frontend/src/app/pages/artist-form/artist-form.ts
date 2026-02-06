@@ -1,13 +1,14 @@
 import { Component, inject, signal, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
-import { ArtistService, ArtistRequest } from '../../services/artist.service';
 import { XInputComponent } from '../../shared/components/x-input/x-input';
 import { XButtonComponent } from '../../shared/components/x-button/x-button';
 import { SelectManyAlbumsComponent } from '../../shared/components/select-many-albums/select-many-albums';
 import { QuickAlbumModalComponent } from '../../shared/components/quick-album-modal/quick-album-modal';
 import { CommonModule } from '@angular/common';
 import { Album } from '../../shared/models/album.model';
+import { ArtistFacade } from '../../shared/facades/artist.facade';
+import { BaseComponent } from '../../shared/helpers/base-component';
 
 @Component({
   selector: 'app-artist-form',
@@ -24,9 +25,9 @@ import { Album } from '../../shared/models/album.model';
   templateUrl: './artist-form.html',
   styleUrl: './artist-form.scss'
 })
-export class ArtistFormComponent implements OnInit {
+export class ArtistFormComponent extends BaseComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private artistService = inject(ArtistService);
+  readonly artistFacade = inject(ArtistFacade);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
@@ -43,50 +44,26 @@ export class ArtistFormComponent implements OnInit {
 
   showQuickAlbumModal = signal(false);
 
-  isLoading = signal(false);
-  isFetching = signal(false);
-  errorMessage = signal<string | null>(null);
-
   ngOnInit() {
     this.route.params.subscribe(params => {
       const id = params['id'];
       if (id) {
         this.artistId.set(id);
         this.isEditMode.set(true);
-        this.loadArtist(id);
+        this.loadArtistData(id);
       }
     });
   }
 
-  loadArtist(id: string) {
-    this.isFetching.set(true);
-    this.artistService.getArtistById(id).subscribe({
-      next: (artist) => {
-        this.artistService.getArtistAlbums(id, 0, 100).subscribe({
-          next: (albumsResponse) => {
-            this.artistForm.patchValue({
-              name: artist.name,
-              description: artist.description,
-              albumIds: albumsResponse.content.map(album => album.id)
-            });
-            this.isFetching.set(false);
-          },
-          error: (err) => {
-            console.error('Error fetching artist albums:', err);
-            this.artistForm.patchValue({
-              name: artist.name,
-              description: artist.description,
-              albumIds: []
-            });
-            this.isFetching.set(false);
-          }
-        });
-      },
-      error: (err) => {
-        console.error('Error fetching artist:', err);
-        this.errorMessage.set('Erro ao carregar dados do artista.');
-        this.isFetching.set(false);
-      }
+  loadArtistData(id: string) {
+    this.artistFacade.loadArtistById(id, (artist) => {
+      this.artistFacade.loadArtistAlbums(id);
+      // Usando efeito para patchear o form quando albums carregarem ou patcheando direto aqui se preferir
+      // Por simplicidade, vamos usar o callback do facade que agora pode ser estendido
+      this.artistForm.patchValue({
+        name: artist.name,
+        description: artist.description
+      });
     });
   }
 
@@ -101,26 +78,13 @@ export class ArtistFormComponent implements OnInit {
   onSubmit() {
     if (this.artistForm.invalid) return;
 
-    this.isLoading.set(true);
-    this.errorMessage.set(null);
+    const request = this.artistForm.value;
+    const onSuccess = () => this.router.navigate(['/home']);
 
-    const request: ArtistRequest = this.artistForm.value;
-
-    const operation = this.isEditMode()
-      ? this.artistService.updateArtist(this.artistId()!, request)
-      : this.artistService.createArtist(request);
-
-    operation.subscribe({
-      next: () => {
-        this.isLoading.set(false);
-        this.router.navigate(['/home']);
-      },
-      error: (err) => {
-        console.error('Error saving artist:', err);
-        this.errorMessage.set(`Erro ao ${this.isEditMode() ? 'atualizar' : 'criar'} artista. Tente novamente.`);
-        this.isLoading.set(false);
-      }
-    });
+    if (this.isEditMode()) {
+      this.artistFacade.updateArtist(this.artistId()!, request, onSuccess);
+    } else {
+      this.artistFacade.createArtist(request, onSuccess);
+    }
   }
 }
-

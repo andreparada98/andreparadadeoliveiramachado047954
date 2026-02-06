@@ -1,7 +1,7 @@
 <main class="album-detail-container">
-    @if (isLoading()) {
+    @if (albumFacade.isLoading()) {
     <div class="loading-state">Carregando detalhes do álbum...</div>
-    } @else if (album()) {
+    } @else if (albumFacade.selectedAlbum()) {
     <div class="header-actions">
         <XButton [variant]="'primary'" (clicked)="onBack()">
             <span class="material-icons">arrow_back</span> Voltar
@@ -13,10 +13,10 @@
 
     <div class="album-hero">
         <div class="album-cover-large">
-            @if (album()?.coverUrl) {
-            <img [src]="album()?.coverUrl" [alt]="album()?.title">
-            } @else if (album()?.covers && album()!.covers!.length > 0) {
-            <img [src]="album()!.covers![0].url" [alt]="album()?.title">
+            @if (albumFacade.selectedAlbum()?.coverUrl) {
+            <img [src]="albumFacade.selectedAlbum()?.coverUrl" [alt]="albumFacade.selectedAlbum()?.title">
+            } @else if (albumFacade.selectedAlbum()?.covers && albumFacade.selectedAlbum()!.covers!.length > 0) {
+            <img [src]="albumFacade.selectedAlbum()!.covers![0].url" [alt]="albumFacade.selectedAlbum()?.title">
             } @else {
             <div class="no-cover-large">
                 <span class="material-icons">album</span>
@@ -26,11 +26,11 @@
         </div>
 
         <div class="album-info-large">
-            <h1 class="album-title-large">{{ album()?.title }}</h1>
+            <h1 class="album-title-large">{{ albumFacade.selectedAlbum()?.title }}</h1>
             <div class="album-meta">
                 <span class="meta-item">
                     <span class="material-icons">calendar_today</span>
-                    {{ album()?.releasedAt | date:'dd/MM/yyyy' }}
+                    {{ albumFacade.selectedAlbum()?.releasedAt | date:'dd/MM/yyyy' }}
                 </span>
             </div>
         </div>
@@ -39,7 +39,7 @@
     <section class="artists-section">
         <h2 class="section-title">Artistas Participantes</h2>
         <div class="artists-list">
-            @for (artist of album()?.artists; track artist.id) {
+            @for (artist of albumFacade.selectedAlbum()?.artists; track artist.id) {
             <div class="artist-item-card" (click)="onViewArtist(artist.id)">
                 <div class="artist-avatar">
                     <span class="material-icons">person</span>
@@ -57,7 +57,7 @@
     </section>
     } @else {
     <div class="error-state">
-        <p>Álbum não encontrado.</p>
+        <p>{{ albumFacade.errorMessage() || 'Álbum não encontrado.' }}</p>
         <XButton (clicked)="onBack()">Voltar para a listagem</XButton>
     </div>
     }

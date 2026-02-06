@@ -2,15 +2,17 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { AlbumEditComponent } from './album-edit';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, provideRouter } from '@angular/router';
-import { AlbumService } from '../../services/album.service';
-import { FileService } from '../../services/file.service';
-import { of, throwError } from 'rxjs';
+import { AlbumFacade } from '../../shared/facades/album.facade';
+import { FileFacade } from '../../shared/facades/file.facade';
+import { of } from 'rxjs';
+import { signal } from '@angular/core';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 describe('AlbumEditComponent', () => {
   let component: AlbumEditComponent;
   let fixture: ComponentFixture<AlbumEditComponent>;
-  let albumServiceSpy: any;
-  let fileServiceSpy: any;
+  let albumFacadeSpy: any;
+  let fileFacadeSpy: any;
   let router: Router;
 
   const mockAlbum = {
@@ -22,20 +24,26 @@ describe('AlbumEditComponent', () => {
   };
 
   beforeEach(async () => {
-    albumServiceSpy = {
-      getAlbumById: vi.fn().mockReturnValue(of(mockAlbum)),
-      updateAlbum: vi.fn().mockReturnValue(of(mockAlbum))
+    albumFacadeSpy = {
+      loadAlbumById: vi.fn(),
+      updateAlbum: vi.fn(),
+      selectedAlbum: signal(mockAlbum),
+      isLoading: signal(false),
+      errorMessage: signal<string | null>(null),
+      totalPages: signal(1)
     };
-    fileServiceSpy = {
-      upload: vi.fn()
+    fileFacadeSpy = {
+      uploadFile: vi.fn(),
+      isUploading: signal(false),
+      errorMessage: signal<string | null>(null)
     };
 
     await TestBed.configureTestingModule({
       imports: [AlbumEditComponent, ReactiveFormsModule],
       providers: [
         provideRouter([]),
-        { provide: AlbumService, useValue: albumServiceSpy },
-        { provide: FileService, useValue: fileServiceSpy },
+        { provide: AlbumFacade, useValue: albumFacadeSpy },
+        { provide: FileFacade, useValue: fileFacadeSpy },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -59,36 +67,34 @@ describe('AlbumEditComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load album data on init', () => {
-    expect(albumServiceSpy.getAlbumById).toHaveBeenCalledWith('1');
-    expect(component.albumForm.value.title).toBe('Dark Side');
-    expect(component.previewUrl()).toBe('http://example.com/cover.jpg');
+  it('should call facade load on init', () => {
+    expect(albumFacadeSpy.loadAlbumById).toHaveBeenCalledWith('1');
   });
 
   it('should call updateAlbum on submit without new cover', () => {
     component.onSubmit();
-    expect(albumServiceSpy.updateAlbum).toHaveBeenCalledWith('1', expect.objectContaining({
-      title: 'Dark Side'
-    }));
-    expect(router.navigate).toHaveBeenCalledWith(['/albums']);
+    expect(albumFacadeSpy.updateAlbum).toHaveBeenCalledWith(
+      '1', 
+      expect.objectContaining({ title: 'Dark Side' }),
+      expect.any(Function)
+    );
   });
 
   it('should upload file and then updateAlbum on submit with new cover', () => {
     const file = new File([''], 'new-cover.jpg', { type: 'image/jpeg' });
     component.albumForm.patchValue({ cover: file });
-    fileServiceSpy.upload.mockReturnValue(of({ id: 'file-123' }));
+    
+    fileFacadeSpy.uploadFile.mockImplementation((f: any, callback: any) => {
+      callback({ id: 'file-123' });
+    });
 
     component.onSubmit();
 
-    expect(fileServiceSpy.upload).toHaveBeenCalledWith(file);
-    expect(albumServiceSpy.updateAlbum).toHaveBeenCalledWith('1', expect.objectContaining({
-      fileId: 'file-123'
-    }));
-  });
-
-  it('should handle error when loading album', () => {
-    albumServiceSpy.getAlbumById.mockReturnValue(throwError(() => new Error('Error')));
-    component.loadAlbum('1');
-    expect(component.errorMessage()).toBe('Erro ao carregar os dados do álbum.');
+    expect(fileFacadeSpy.uploadFile).toHaveBeenCalled();
+    expect(albumFacadeSpy.updateAlbum).toHaveBeenCalledWith(
+      '1',
+      expect.objectContaining({ fileId: 'file-123' }),
+      expect.any(Function)
+    );
   });
 });

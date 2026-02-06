@@ -5,13 +5,13 @@
       <h1>Editar Álbum</h1>
     </div>
 
-    @if (isFetching()) {
+    @if (albumFacade.isLoading()) {
       <div class="loading-state">Carregando dados do álbum...</div>
     } @else {
       <form [formGroup]="albumForm" (ngSubmit)="onSubmit()" class="album-form">
-        @if (errorMessage()) {
+        @if (albumFacade.errorMessage() || fileFacade.errorMessage()) {
         <div class="error-box">
-          {{ errorMessage() }}
+          {{ albumFacade.errorMessage() || fileFacade.errorMessage() }}
         </div>
         }
 
@@ -49,8 +49,8 @@
         </div>
 
         <div class="actions">
-          <XButton type="submit" [disabled]="albumForm.invalid || isLoading()">
-            @if (isLoading()) {
+          <XButton type="submit" [disabled]="albumForm.invalid || albumFacade.isLoading() || fileFacade.isUploading()">
+            @if (albumFacade.isLoading() || fileFacade.isUploading()) {
             Salvando...
             } @else {
             Atualizar Álbum

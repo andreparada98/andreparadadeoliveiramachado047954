@@ -9,6 +9,10 @@
   top: 0;
   z-index: 10;
 
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+
   .logo-section {
     display: flex;
     align-items: center;
@@ -34,6 +38,10 @@
       font-weight: 700;
       color: #111827;
       margin: 0;
+
+      @media (max-width: 768px) {
+        display: none;
+      }
     }
   }
 
@@ -42,6 +50,11 @@
     gap: 1.5rem;
     margin-left: 2rem;
     flex: 1;
+
+    @media (max-width: 768px) {
+      margin-left: 1rem;
+      gap: 1rem;
+    }
 
     .nav-item {
       text-decoration: none;

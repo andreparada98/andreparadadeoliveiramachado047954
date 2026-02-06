@@ -1,13 +1,15 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { AlbumService, AlbumRequest } from '../../services/album.service';
-import { FileService } from '../../services/file.service';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { takeUntil } from 'rxjs/operators';
 import { XInputComponent } from '../../shared/components/x-input/x-input';
 import { XButtonComponent } from '../../shared/components/x-button/x-button';
 import { SelectManyArtistsComponent } from '../../shared/components/select-many-artists/select-many-artists';
 import { CommonModule } from '@angular/common';
-import { finalize } from 'rxjs';
+import { AlbumFacade } from '../../shared/facades/album.facade';
+import { FileFacade } from '../../shared/facades/file.facade';
+import { BaseComponent } from '../../shared/helpers/base-component';
 
 @Component({
   selector: 'app-album-edit',
@@ -23,10 +25,10 @@ import { finalize } from 'rxjs';
   templateUrl: './album-edit.html',
   styleUrl: './album-edit.scss'
 })
-export class AlbumEditComponent implements OnInit {
+export class AlbumEditComponent extends BaseComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private albumService = inject(AlbumService);
-  private fileService = inject(FileService);
+  readonly albumFacade = inject(AlbumFacade);
+  readonly fileFacade = inject(FileFacade);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
@@ -37,45 +39,37 @@ export class AlbumEditComponent implements OnInit {
     cover: [null]
   });
 
-  isLoading = signal(false);
-  isFetching = signal(false);
   albumId = signal<string | null>(null);
   previewUrl = signal<string | null>(null);
-  errorMessage = signal<string | null>(null);
+
+  constructor() {
+    super();
+    toObservable(this.albumFacade.selectedAlbum)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(album => {
+        if (album) {
+          const date = album.releasedAt.split('T')[0];
+          this.albumForm.patchValue({
+            title: album.title,
+            releasedAt: date,
+            artistIds: album.artists.map(a => a.id)
+          }, { emitEvent: false });
+          
+          if (album.coverUrl) {
+            this.previewUrl.set(album.coverUrl);
+          } else if (album.covers && album.covers.length > 0) {
+            this.previewUrl.set(album.covers[0].url);
+          }
+        }
+      });
+  }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.albumId.set(id);
-      this.loadAlbum(id);
+      this.albumFacade.loadAlbumById(id);
     }
-  }
-
-  loadAlbum(id: string) {
-    this.isFetching.set(true);
-    this.albumService.getAlbumById(id).subscribe({
-      next: (album) => {
-        const date = album.releasedAt.split('T')[0];
-        this.albumForm.patchValue({
-          title: album.title,
-          releasedAt: date,
-          artistIds: album.artists.map(a => a.id)
-        });
-        
-        if (album.coverUrl) {
-          this.previewUrl.set(album.coverUrl);
-        } else if (album.covers && album.covers.length > 0) {
-          this.previewUrl.set(album.covers[0].url);
-        }
-        
-        this.isFetching.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading album:', err);
-        this.errorMessage.set('Erro ao carregar os dados do álbum.');
-        this.isFetching.set(false);
-      }
-    });
   }
 
   onFileChange(event: Event) {
@@ -93,22 +87,12 @@ export class AlbumEditComponent implements OnInit {
   onSubmit() {
     if (this.albumForm.invalid || !this.albumId()) return;
 
-    this.isLoading.set(true);
-    this.errorMessage.set(null);
-
     const { title, releasedAt, artistIds, cover } = this.albumForm.value;
     const formattedDate = `${releasedAt}T00:00:00`;
 
     if (cover instanceof File) {
-      this.fileService.upload(cover).subscribe({
-        next: (fileResponse) => {
-          this.saveAlbum(title, formattedDate, artistIds, fileResponse.id);
-        },
-        error: (err) => {
-          console.error('Error uploading cover:', err);
-          this.errorMessage.set('Erro ao fazer upload da capa. Tente novamente.');
-          this.isLoading.set(false);
-        }
+      this.fileFacade.uploadFile(cover, (fileResponse) => {
+        this.saveAlbum(title, formattedDate, artistIds, fileResponse.id);
       });
     } else {
       this.saveAlbum(title, formattedDate, artistIds);
@@ -116,23 +100,15 @@ export class AlbumEditComponent implements OnInit {
   }
 
   private saveAlbum(title: string, releasedAt: string, artistIds: string[], fileId?: string) {
-    const request: AlbumRequest = {
+    const request = {
       title,
       releasedAt,
       artistIds,
       fileId
     };
 
-    this.albumService.updateAlbum(this.albumId()!, request)
-      .pipe(finalize(() => this.isLoading.set(false)))
-      .subscribe({
-        next: () => {
-          this.router.navigate(['/albums']);
-        },
-        error: (err) => {
-          console.error('Error updating album:', err);
-          this.errorMessage.set('Erro ao atualizar álbum. Verifique os dados e tente novamente.');
-        }
-      });
+    this.albumFacade.updateAlbum(this.albumId()!, request, () => {
+      this.router.navigate(['/albums']);
+    });
   }
 }

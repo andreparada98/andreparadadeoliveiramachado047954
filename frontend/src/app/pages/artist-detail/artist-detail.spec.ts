@@ -1,26 +1,33 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { ArtistDetailComponent } from './artist-detail';
 import { ActivatedRoute, provideRouter } from '@angular/router';
-import { ArtistService } from '../../services/artist.service';
-import { of, throwError } from 'rxjs';
+import { ArtistFacade } from '../../shared/facades/artist.facade';
+import { of } from 'rxjs';
+import { signal } from '@angular/core';
 import { convertToParamMap } from '@angular/router';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 describe('ArtistDetailComponent', () => {
   let component: ArtistDetailComponent;
   let fixture: ComponentFixture<ArtistDetailComponent>;
-  let artistServiceSpy: any;
+  let artistFacadeSpy: any;
 
   beforeEach(async () => {
-    artistServiceSpy = {
-      getArtistById: vi.fn(),
-      getArtistAlbums: vi.fn()
+    artistFacadeSpy = {
+      loadArtistById: vi.fn(),
+      loadArtistAlbums: vi.fn(),
+      selectedArtist: signal(null),
+      artistAlbums: signal([]),
+      isLoading: signal(false),
+      isLoadingAlbums: signal(false),
+      errorMessage: signal<string | null>(null)
     };
 
     await TestBed.configureTestingModule({
       imports: [ArtistDetailComponent],
       providers: [
         provideRouter([]),
-        { provide: ArtistService, useValue: artistServiceSpy },
+        { provide: ArtistFacade, useValue: artistFacadeSpy },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -38,30 +45,19 @@ describe('ArtistDetailComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load artist and albums on init', () => {
-    const mockArtist = { id: '123', name: 'Pink Floyd', albumCount: 5 };
-    const mockAlbumsResponse = { content: [{ id: '1', title: 'Album 1' }], page: {} };
-
-    artistServiceSpy.getArtistById.mockReturnValue(of(mockArtist));
-    artistServiceSpy.getArtistAlbums.mockReturnValue(of(mockAlbumsResponse));
-
+  it('should call facade to load artist and albums on init', () => {
     fixture.detectChanges(); // triggers ngOnInit
 
     expect(component.artistId()).toBe('123');
-    expect(component.artist()).toEqual(mockArtist);
-    expect(component.albums()).toEqual(mockAlbumsResponse.content);
-    expect(component.isLoading()).toBeFalsy();
-    expect(component.isLoadingAlbums()).toBeFalsy();
+    expect(artistFacadeSpy.loadArtistById).toHaveBeenCalledWith('123');
+    expect(artistFacadeSpy.loadArtistAlbums).toHaveBeenCalledWith('123');
   });
 
-  it('should handle error when loading artist', () => {
-    artistServiceSpy.getArtistById.mockReturnValue(throwError(() => new Error('Error')));
-    artistServiceSpy.getArtistAlbums.mockReturnValue(of({ content: [] }));
-
+  it('should reflect artist data from facade', () => {
+    const mockArtist = { id: '123', name: 'Pink Floyd' } as any;
+    artistFacadeSpy.selectedArtist.set(mockArtist);
     fixture.detectChanges();
-
-    expect(component.isLoading()).toBeFalsy();
-    expect(component.artist()).toBeNull();
+    
+    expect(component.artistFacade.selectedArtist()).toEqual(mockArtist);
   });
 });
-

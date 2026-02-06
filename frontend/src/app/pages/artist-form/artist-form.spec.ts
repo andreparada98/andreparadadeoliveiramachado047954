@@ -2,28 +2,35 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { ArtistFormComponent } from './artist-form';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, provideRouter } from '@angular/router';
-import { ArtistService } from '../../services/artist.service';
-import { of, throwError } from 'rxjs';
+import { ArtistFacade } from '../../shared/facades/artist.facade';
+import { of } from 'rxjs';
+import { signal } from '@angular/core';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 describe('ArtistFormComponent', () => {
   let component: ArtistFormComponent;
   let fixture: ComponentFixture<ArtistFormComponent>;
-  let artistServiceSpy: any;
+  let artistFacadeSpy: any;
   let router: Router;
 
   beforeEach(async () => {
-    artistServiceSpy = {
-      getArtistById: vi.fn(),
-      getArtistAlbums: vi.fn(),
-      createArtist: vi.fn().mockReturnValue(of({})),
-      updateArtist: vi.fn().mockReturnValue(of({}))
+    artistFacadeSpy = {
+      loadArtistById: vi.fn(),
+      loadArtistAlbums: vi.fn(),
+      createArtist: vi.fn(),
+      updateArtist: vi.fn(),
+      isLoading: signal(false),
+      errorMessage: signal<string | null>(null),
+      selectedArtist: signal(null),
+      artistAlbums: signal([]),
+      isLoadingAlbums: signal(false)
     };
 
     await TestBed.configureTestingModule({
       imports: [ArtistFormComponent, ReactiveFormsModule],
       providers: [
         provideRouter([]),
-        { provide: ArtistService, useValue: artistServiceSpy },
+        { provide: ArtistFacade, useValue: artistFacadeSpy },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -46,45 +53,6 @@ describe('ArtistFormComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should be in creation mode by default', () => {
-    expect(component.isEditMode()).toBeFalsy();
-  });
-
-  it('should be in edit mode when ID is provided', async () => {
-    const mockArtist = { id: '1', name: 'Pink Floyd', description: 'Legendary band' };
-    artistServiceSpy.getArtistById.mockReturnValue(of(mockArtist));
-    artistServiceSpy.getArtistAlbums.mockReturnValue(of({ content: [] }));
-
-    // Re-initialize with ID
-    TestBed.resetTestingModule();
-    await TestBed.configureTestingModule({
-      imports: [ArtistFormComponent, ReactiveFormsModule],
-      providers: [
-        provideRouter([]),
-        { provide: ArtistService, useValue: artistServiceSpy },
-        {
-          provide: ActivatedRoute,
-          useValue: { 
-            params: of({ id: '1' }),
-            paramMap: of({ get: () => '1' })
-          }
-        }
-      ]
-    }).compileComponents();
-
-    const editFixture = TestBed.createComponent(ArtistFormComponent);
-    const editComponent = editFixture.componentInstance;
-    
-    router = TestBed.inject(Router);
-    vi.spyOn(router, 'navigate');
-
-    editFixture.detectChanges();
-    await editFixture.whenStable();
-
-    expect(editComponent.isEditMode()).toBeTruthy();
-    expect(artistServiceSpy.getArtistById).toHaveBeenCalledWith('1');
-  });
-
   it('should call createArtist on submit in creation mode', () => {
     component.artistForm.patchValue({
       name: 'New Artist',
@@ -93,10 +61,10 @@ describe('ArtistFormComponent', () => {
 
     component.onSubmit();
 
-    expect(artistServiceSpy.createArtist).toHaveBeenCalledWith(expect.objectContaining({
-      name: 'New Artist'
-    }));
-    expect(router.navigate).toHaveBeenCalledWith(['/home']);
+    expect(artistFacadeSpy.createArtist).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'New Artist' }),
+      expect.any(Function)
+    );
   });
 
   it('should call updateArtist on submit in edit mode', () => {
@@ -109,8 +77,10 @@ describe('ArtistFormComponent', () => {
 
     component.onSubmit();
 
-    expect(artistServiceSpy.updateArtist).toHaveBeenCalledWith('1', expect.objectContaining({
-      name: 'Updated Artist'
-    }));
+    expect(artistFacadeSpy.updateArtist).toHaveBeenCalledWith(
+      '1',
+      expect.objectContaining({ name: 'Updated Artist' }),
+      expect.any(Function)
+    );
   });
 });

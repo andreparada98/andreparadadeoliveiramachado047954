@@ -5,16 +5,16 @@
       <h1>{{ isEditMode() ? 'Editar Artista' : 'Adicionar Novo Artista' }}</h1>
     </div>
 
-    @if (isFetching()) {
+    @if (artistFacade.isLoading()) {
     <div class="loading-box">
       <span class="material-icons spinning">sync</span>
       <p>Carregando dados...</p>
     </div>
     } @else {
     <form [formGroup]="artistForm" (ngSubmit)="onSubmit()" class="artist-form">
-      @if (errorMessage()) {
+      @if (artistFacade.errorMessage()) {
       <div class="error-box">
-        {{ errorMessage() }}
+        {{ artistFacade.errorMessage() }}
       </div>
       }
 
@@ -36,8 +36,8 @@
       </div>
 
       <div class="actions">
-        <XButton type="submit" [disabled]="artistForm.invalid || isLoading()">
-          @if (isLoading()) {
+        <XButton type="submit" [disabled]="artistForm.invalid || artistFacade.isLoading()">
+          @if (artistFacade.isLoading()) {
           Salvando...
           } @else {
           {{ isEditMode() ? 'Salvar Alterações' : 'Salvar Artista' }}

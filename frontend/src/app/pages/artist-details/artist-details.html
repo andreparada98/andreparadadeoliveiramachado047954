@@ -6,15 +6,20 @@
     </a>
   </header>
 
-  @if (artist()) {
+  @if (artistFacade.isLoading()) {
+  <div class="loading-state">
+    <span class="material-icons spinning">sync</span>
+    <p>Carregando detalhes do artista...</p>
+  </div>
+  } @else if (artistFacade.selectedArtist()) {
   <section class="artist-hero">
     <div class="artist-info">
       <div class="avatar-large">
-        {{ artist()?.name?.charAt(0)?.toUpperCase() }}
+        {{ artistFacade.selectedArtist()?.name?.charAt(0)?.toUpperCase() }}
       </div>
       <div class="text-content">
-        <h1>{{ artist()?.name }}</h1>
-        <p class="description">{{ artist()?.description }}</p>
+        <h1>{{ artistFacade.selectedArtist()?.name }}</h1>
+        <p class="description">{{ artistFacade.selectedArtist()?.description }}</p>
       </div>
     </div>
   </section>
@@ -25,8 +30,11 @@
       <h2>Álbuns</h2>
     </div>
 
+    @if (artistFacade.isLoadingAlbums()) {
+    <p class="loading-text">Buscando álbuns...</p>
+    } @else {
     <div class="albums-grid">
-      @for (album of albums(); track album.id) {
+      @for (album of artistFacade.artistAlbums(); track album.id) {
       <div class="album-card">
         <div class="album-cover-placeholder">
           <span class="material-icons">music_note</span>
@@ -40,12 +48,13 @@
       <p class="no-data">Nenhum álbum encontrado para este artista.</p>
       }
     </div>
+    }
   </section>
   } @else {
-  <div class="loading-state">
-    <span class="material-icons spinning">sync</span>
-    <p>Carregando detalhes do artista...</p>
+  <div class="error-state">
+    <span class="material-icons">error</span>
+    <p>{{ artistFacade.errorMessage() || 'Não foi possível carregar os detalhes deste artista.' }}</p>
+    <a routerLink="/home" class="btn-retry">Voltar para a Home</a>
   </div>
   }
 </div>
-

@@ -2,29 +2,28 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { LoginComponent } from './login';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, provideRouter } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { of, throwError } from 'rxjs';
+import { AuthFacade } from '../../shared/facades/auth.facade';
+import { signal } from '@angular/core';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
-  let authServiceSpy: any;
-  let routerSpy: any;
+  let authFacadeSpy: any;
 
   beforeEach(async () => {
-    authServiceSpy = {
-      login: vi.fn()
-    };
-    routerSpy = {
-      navigate: vi.fn()
+    authFacadeSpy = {
+      login: vi.fn(),
+      isAuthenticated: signal(false),
+      isLoading: signal(false),
+      errorMessage: signal<string | null>(null)
     };
 
     await TestBed.configureTestingModule({
       imports: [LoginComponent, ReactiveFormsModule],
       providers: [
         provideRouter([]),
-        { provide: AuthService, useValue: authServiceSpy },
-        { provide: Router, useValue: routerSpy }
+        { provide: AuthFacade, useValue: authFacadeSpy }
       ]
     }).compileComponents();
 
@@ -41,9 +40,7 @@ describe('LoginComponent', () => {
     expect(component.loginForm.valid).toBeFalsy();
   });
 
-  it('should call authService.login and navigate on success', () => {
-    authServiceSpy.login.mockReturnValue(of({ token: 'fake-token' }));
-    
+  it('should call authFacade.login on submit', () => {
     component.loginForm.patchValue({
       username: 'admin',
       password: 'admin'
@@ -51,25 +48,21 @@ describe('LoginComponent', () => {
     
     component.onSubmit();
 
-    expect(authServiceSpy.login).toHaveBeenCalledWith({
+    expect(authFacadeSpy.login).toHaveBeenCalledWith({
       username: 'admin',
       password: 'admin'
     });
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
   });
 
-  it('should set error message on login failure', () => {
-    authServiceSpy.login.mockReturnValue(throwError(() => new Error('Invalid credentials')));
-    
-    component.loginForm.patchValue({
-      username: 'wrong',
-      password: 'wrong'
-    });
-    
-    component.onSubmit();
+  it('should reflect loading state from facade', () => {
+    authFacadeSpy.isLoading.set(true);
+    fixture.detectChanges();
+    expect(component.authFacade.isLoading()).toBe(true);
+  });
 
-    expect(component.errorMessage()).toBe('Usuário ou senha inválidos');
-    expect(component.isLoading()).toBeFalsy();
+  it('should reflect error message from facade', () => {
+    authFacadeSpy.errorMessage.set('Invalid credentials');
+    fixture.detectChanges();
+    expect(component.authFacade.errorMessage()).toBe('Invalid credentials');
   });
 });
-

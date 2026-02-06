@@ -1,21 +1,26 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { AlbumDetailComponent } from './album-detail';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
-import { AlbumService } from '../../services/album.service';
-import { of, throwError } from 'rxjs';
+import { AlbumFacade } from '../../shared/facades/album.facade';
+import { of } from 'rxjs';
+import { signal } from '@angular/core';
 import { convertToParamMap } from '@angular/router';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 describe('AlbumDetailComponent', () => {
   let component: AlbumDetailComponent;
   let fixture: ComponentFixture<AlbumDetailComponent>;
-  let albumServiceSpy: any;
+  let albumFacadeSpy: any;
   let routerSpy: any;
 
   const mockAlbum = { id: '1', title: 'Album 1', artists: [] };
 
   beforeEach(async () => {
-    albumServiceSpy = {
-      getAlbumById: vi.fn().mockReturnValue(of(mockAlbum))
+    albumFacadeSpy = {
+      loadAlbumById: vi.fn(),
+      selectedAlbum: signal(mockAlbum),
+      isLoading: signal(false),
+      errorMessage: signal<string | null>(null)
     };
     routerSpy = {
       navigate: vi.fn()
@@ -25,7 +30,7 @@ describe('AlbumDetailComponent', () => {
       imports: [AlbumDetailComponent],
       providers: [
         provideRouter([]),
-        { provide: AlbumService, useValue: albumServiceSpy },
+        { provide: AlbumFacade, useValue: albumFacadeSpy },
         { provide: Router, useValue: routerSpy },
         {
           provide: ActivatedRoute,
@@ -45,18 +50,9 @@ describe('AlbumDetailComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load album on init', () => {
+  it('should call facade to load album on init', () => {
     fixture.detectChanges();
-    expect(albumServiceSpy.getAlbumById).toHaveBeenCalledWith('1');
-    expect(component.album()).toEqual(mockAlbum);
-    expect(component.isLoading()).toBeFalsy();
-  });
-
-  it('should handle error when loading album', () => {
-    albumServiceSpy.getAlbumById.mockReturnValue(throwError(() => new Error('Error')));
-    fixture.detectChanges();
-    expect(component.isLoading()).toBeFalsy();
-    expect(component.album()).toBeNull();
+    expect(albumFacadeSpy.loadAlbumById).toHaveBeenCalledWith('1');
   });
 
   it('should navigate back to albums', () => {
@@ -65,9 +61,7 @@ describe('AlbumDetailComponent', () => {
   });
 
   it('should navigate to edit album', () => {
-    component.album.set(mockAlbum as any);
     component.onEdit();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/album', '1', 'edit']);
   });
 });
-

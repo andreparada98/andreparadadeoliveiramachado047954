@@ -1,9 +1,9 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { AlbumService } from '../../services/album.service';
 import { Album } from '../../shared/models/album.model';
 import { XButtonComponent } from '../../shared/components/x-button/x-button';
+import { AlbumFacade } from '../../shared/facades/album.facade';
 
 @Component({
   selector: 'app-album-detail',
@@ -14,33 +14,17 @@ import { XButtonComponent } from '../../shared/components/x-button/x-button';
 })
 export class AlbumDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  private albumService = inject(AlbumService);
+  readonly albumFacade = inject(AlbumFacade);
   private router = inject(Router);
 
   albumId = signal<string | null>(null);
-  album = signal<Album | null>(null);
-  isLoading = signal(true);
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
         this.albumId.set(id);
-        this.loadAlbum(id);
-      }
-    });
-  }
-
-  loadAlbum(id: string) {
-    this.isLoading.set(true);
-    this.albumService.getAlbumById(id).subscribe({
-      next: (data) => {
-        this.album.set(data);
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading album:', err);
-        this.isLoading.set(false);
+        this.albumFacade.loadAlbumById(id);
       }
     });
   }
@@ -50,8 +34,9 @@ export class AlbumDetailComponent implements OnInit {
   }
 
   onEdit() {
-    if (this.album()) {
-      this.router.navigate(['/album', this.album()!.id, 'edit']);
+    const album = this.albumFacade.selectedAlbum();
+    if (album) {
+      this.router.navigate(['/album', album.id, 'edit']);
     }
   }
 

@@ -12,11 +12,11 @@
         </div>
     </div>
 
-    @if (isLoading()) {
+    @if (albumFacade.isLoading()) {
     <div class="loading-state">Carregando álbuns...</div>
     } @else {
     <div class="albums-grid">
-        @for (album of albums(); track album.id) {
+        @for (album of albumFacade.albums(); track album.id) {
         <AlbumCard [album]="album" (edit)="onEditAlbum($event)" (view)="onViewAlbum($event)"></AlbumCard>
         } @empty {
         <div class="empty-state">Nenhum álbum encontrado.</div>
@@ -24,7 +24,7 @@
     </div>
     }
 
-    <XPagination [currentPage]="currentPage()" [pageSize]="pageSize()" [totalPages]="totalPages()"
-        [totalElements]="totalElements()" (pageChange)="onPageChange($event)" (pageSizeChange)="pageSize.set($event)">
+    <XPagination [currentPage]="currentPage()" [pageSize]="pageSize()" [totalPages]="albumFacade.totalPages()"
+        [totalElements]="albumFacade.totalElements()" (pageChange)="onPageChange($event)" (pageSizeChange)="pageSize.set($event)">
     </XPagination>
 </main>
